@@ -1,5 +1,3 @@
-import TIME from "./time";
-
 const hud = document.getElementById("hud");
 hud.style.cssText = `
     position: absolute;
@@ -20,5 +18,3 @@ const updateHUD = function () {
     SPEED: ${TIME.timespeed}
     `;
 };
-
-export { updateHUD };

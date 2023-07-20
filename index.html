@@ -9,8 +9,16 @@
     </style>
   </head>
   <body>
+    <!-- library: three.js and its official OrbiControls class -->
+    <!-- r147 is the latest version provides non-module OrbiControls.js -->
+    <script src="./libs/three.min.js"></script>
+    <script src="./libs/OrbitControls.js"></script>
+
     <div id="canvas-container"></div>
     <div id="hud"></div>
-    <script type="module" src="./app/app.js"></script>
+
+    <script src="./app/time.js"></script>
+    <script src="./app/HUD.js"></script>
+    <script src="./app/app.js"></script>
   </body>
 </html>

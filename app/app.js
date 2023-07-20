@@ -1,8 +1,3 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import TIME from "./time";
-import * as HUD from "./HUD";
-
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -16,7 +11,7 @@ camera.position.set(0, 10, 40);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.maxDistance = 100;
@@ -130,7 +125,7 @@ const tick = () => {
   oldElapsedTime = elapsedTime;
   TIME.update(deltaTime);
 
-  HUD.updateHUD();
+  updateHUD();
 
   updateMeshs();
 

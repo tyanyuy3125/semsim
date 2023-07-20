@@ -44,5 +44,3 @@ const TIME = {
     return current;
   },
 };
-
-export default TIME;
