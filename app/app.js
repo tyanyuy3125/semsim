@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import TIME from "./time";
+import * as HUD from "./HUD";
 
 const sizes = {
   width: window.innerWidth,
@@ -62,9 +64,6 @@ const sunMaterial = new THREE.MeshBasicMaterial({
   map: new THREE.TextureLoader().load("../assets/sun.jpg"),
 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-// sunlight
-const sunLight = new THREE.PointLight(0xffffff, 1);
-sun.add(sunLight);
 scene.add(sun);
 
 // earth
@@ -86,30 +85,56 @@ const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
 moon.receiveShadow = true;
 scene.add(moon);
-earth.add(moon);
 
-// NOT PRECISE AT ALL :)
+// sunlight
+const sunLight = new THREE.PointLight(0xfafad2, 1);
+sun.add(sunLight);
+
+// ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
+scene.add(ambientLight);
+
+earth.rotateX((-23.5 / 180) * Math.PI);
+
 function updateMeshs() {
-  sun.rotation.y += 0.005;
-  earth.rotation.y += 0.0365;
-  // moon.rotation.y += 0.0003
+  // TODO: more accurate moon position?
+  var py = TIME.ProportionInYear();
+  var pd = TIME.ProportionInDay();
+  var pl = TIME.ProportionInLunarMonth();
 
-  earth.position.x = 20 * Math.cos(Date.now() * 0.0001);
-  earth.position.z = 20 * Math.sin(Date.now() * 0.0001);
+  earth.rotation.y = (py + pd - 0.72) * 2 * Math.PI;
+  earth.position.set(
+    -20 * Math.cos((py - 0.22) * 2 * Math.PI),
+    0,
+    20 * Math.sin((py - 0.22) * 2 * Math.PI)
+  );
 
-  moon.position.x = 3 * Math.cos(Date.now() * 0.0003);
-  moon.position.z = 3 * Math.sin(Date.now() * 0.0003);
+  moon.rotation.y = (py + pl - 0.72) * 2 * Math.PI;
+  moon.position.x = earth.position.x + 3 * Math.cos((py + pl - 0.22) * 2 * Math.PI);
+  moon.position.z = earth.position.z + 3 * Math.sin((0.22 - py - pl) * 2 * Math.PI);
 }
 
+const clock = new THREE.Clock();
+let oldElapsedTime = 0;
+TIME.timespeed = 1;
+TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
+
 // animation loop
-function animate() {
+const tick = () => {
+  const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - oldElapsedTime;
+  oldElapsedTime = elapsedTime;
+  TIME.update(deltaTime);
+
+  HUD.updateHUD();
+
   updateMeshs();
 
   controls.update();
 
   renderer.render(scene, camera);
 
-  window.requestAnimationFrame(animate);
+  window.requestAnimationFrame(tick);
 }
 
-animate();
+tick();
