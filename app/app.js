@@ -27,17 +27,21 @@ window.document
   .appendChild(renderer.domElement);
 
 // resize listener
+let resizeTimeout;
 window.addEventListener("resize", () => {
-  // update sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // update sizes
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
 
-  // update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
+    // update camera
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
 
-  // update renderer
-  renderer.setSize(sizes.width, sizes.height);
+    // update renderer
+    renderer.setSize(sizes.width, sizes.height);
+  }, 500); // 500 milliseconds debounce time
 });
 
 // stupid starry background (randomly generated)
