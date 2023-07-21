@@ -58,18 +58,14 @@ scene.add(starField);
 
 // sun
 const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
-const sunMaterial = new THREE.MeshBasicMaterial({
-  // MeshBasicMaterial does not react to light
-  map: new THREE.TextureLoader().load("../assets/sun.jpg"),
-});
+// MeshBasicMaterial does not react to light
+const sunMaterial = new THREE.MeshBasicMaterial({ map: sunMapTexture });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 scene.add(sun);
 
 // earth
 const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
-const earthMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/earth.jpg"),
-});
+const earthMaterial = new THREE.MeshStandardMaterial({ map: earthMapTexture });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
@@ -77,9 +73,7 @@ scene.add(earth);
 
 // moon
 const moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-const moonMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/moon.jpg"),
-});
+const moonMaterial = new THREE.MeshStandardMaterial({ map: moonMapTexture });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
 moon.receiveShadow = true;
@@ -109,14 +103,16 @@ function updateMeshs() {
   );
 
   moon.rotation.y = (py + pl - 0.72) * 2 * Math.PI;
-  moon.position.x = earth.position.x + 3 * Math.cos((py + pl - 0.22) * 2 * Math.PI);
-  moon.position.z = earth.position.z + 3 * Math.sin((0.22 - py - pl) * 2 * Math.PI);
+  moon.position.x =
+    earth.position.x + 3 * Math.cos((py + pl - 0.22) * 2 * Math.PI);
+  moon.position.z =
+    earth.position.z + 3 * Math.sin((0.22 - py - pl) * 2 * Math.PI);
 }
 
 const clock = new THREE.Clock();
 let oldElapsedTime = 0;
 TIME.timespeed = 1;
-TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
+TIME.timespeed = 10000; // UNCOMMENT TO SPEED UP TIME
 
 // animation loop
 const tick = () => {
@@ -134,6 +130,6 @@ const tick = () => {
   renderer.render(scene, camera);
 
   window.requestAnimationFrame(tick);
-}
+};
 
 tick();
