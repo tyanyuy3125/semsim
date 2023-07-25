@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import TIME from "./time";
 import * as HUD from "./HUD";
+import { Compositor } from "./compositor"
 
 const sizes = {
   width: window.innerWidth,
@@ -15,6 +16,10 @@ camera.position.set(0, 10, 40);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(sizes.width, sizes.height);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+
+const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -41,6 +46,7 @@ window.addEventListener("resize", () => {
 
     // update renderer
     renderer.setSize(sizes.width, sizes.height);
+    compositor.setSize(sizes.width, sizes.height);
   }, 500); // 500 milliseconds debounce time
 });
 
@@ -61,29 +67,62 @@ starsGeometry.setFromPoints(stars);
 const starField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(starField);
 
+const texLoader = new THREE.TextureLoader();
+
 // sun
 const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
-const sunMaterial = new THREE.MeshBasicMaterial({
+const sunMaterial = new THREE.MeshStandardMaterial({
   // MeshBasicMaterial does not react to light
-  map: new THREE.TextureLoader().load("../assets/sun.jpg"),
+  color: 0x000000,
+  emissiveMap: texLoader.load("../assets/sun_albedo.jpg"),
+  emissive: 0xFFF6ED,
+  emissiveIntensity: 10
 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.castShadow = false;
+sun.receiveShadow = false;
 scene.add(sun);
 
 // earth
 const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/earth.jpg"),
+  map: texLoader.load("../assets/earth_albedo.jpg"),
+  normalMap: texLoader.load("../assets/earth_normal.png"),
+  roughnessMap: texLoader.load("../assets/earth_roughness.png")
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
+
+const earthCloudGeometry = new THREE.SphereGeometry(1.01, 32, 32);
+const cloudMaterial = new THREE.MeshStandardMaterial(
+  {
+    color: 0xFFFFFF,
+    alphaMap: texLoader.load("../assets/earth_cloud_alpha.jpg"),
+    transparent: true
+  }
+);
+const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
+earthCloud.receiveShadow = true;
+earthCloud.castShadow = true;
+earth.add(earthCloud);
+
+const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: new THREE.TextureLoader().load("../assets/sprite.png"),
+  transparent: true,
+  opacity: 0.1
+}));
+sprite.scale.set(3.4,3.4,1);
+earth.add(sprite);
+
 scene.add(earth);
 
 // moon
-const moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const moonGeometry = new THREE.SphereGeometry(0.5, 256, 128);
 const moonMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/moon.jpg"),
+  map: new THREE.TextureLoader().load("../assets/moon_albedo.png"),
+  bumpMap: new THREE.TextureLoader().load("../assets/moon_disp.png"),
+  bumpScale: 0.1,
 });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
@@ -91,7 +130,12 @@ moon.receiveShadow = true;
 scene.add(moon);
 
 // sunlight
-const sunLight = new THREE.PointLight(0xfafad2, 1);
+const sunLight = new THREE.PointLight(0xFFF6ED, 1);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 16384;
+sunLight.shadow.mapSize.height = 16384;
+sunLight.shadow.camera.near = 0.5;
+sunLight.shadow.camera.far = 500;
 sun.add(sunLight);
 
 // ambient light
@@ -136,7 +180,8 @@ const tick = () => {
 
   controls.update();
 
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+  compositor.render();
 
   window.requestAnimationFrame(tick);
 }
