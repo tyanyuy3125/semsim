@@ -16,8 +16,6 @@ hud.innerHTML = "";
 const updateHUD = function () {
   hud.innerHTML = `
     TIME: ${TIME.current.toLocaleString()}
-    <br>
-    SPEED: ${TIME.timespeed}
     `;
 };
 

@@ -1,16 +1,86 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>My first three.js app</title>
-    <style>
-      body {
-        margin: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="canvas-container"></div>
-    <div id="hud"></div>
-    <script type="module" src="./app/app.js"></script>
-  </body>
+<head>
+  <title>天体运行模拟</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="./lib/style.css">
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="canvas-container"></div>
+  <div id="hud"></div>
+  <div id="logo">
+    <div id="team">
+      <img src="./logo/team.png">
+    </div>
+    <div id="description">
+      <div id="title">天体运行模拟</div>
+      <div id="credit">by: ${TeamName}$</div>
+      <div id="vecline"></div>
+    </div>
+  </div>
+
+  <div id="controlPanel">
+    <input type="range" id="timeSpeed" name="timeSpeed" min="-100" max="100">
+    <label for="timeSpeed">速度</label>
+    <span id="speedValue">1 SEC / S</span>
+    <div id="buttons">
+      <button>SEC</button>
+      <button>DAY</button>
+      <button>MON</button>
+      <button>YEAR</button>
+    </div>
+    <br>
+  </div>
+
+
+  <!-- <label for="timeBar">当前时间:</label>
+    <input type="range" id="timeBar" name="timeBar" min="0" max="100">
+    <br> -->
+
+  <div id="icons">
+    <div class="icon" id="eyeIcon">
+      <img src="./logo/eye.png" alt="eye">
+      <div class="options" id="eyeOptions">
+        <div class="option">侧视图</div>
+        <div class="option">俯视图</div>
+        <div class="option" style="background-color: #636366;">3D模式</div>
+      </div>
+    </div>
+    <div class="icon" id="sunIcon">
+      <img src="./logo/sun_fill.png" alt="sun">
+      <div class="options" id="sunOptions">
+        <div class="option">日全食</div>
+        <div class="option">日环食</div>
+        <div class="option">日偏食</div>
+      </div>
+    </div>
+    <div class="icon" id="moonIcon">
+      <img src="./logo/moon-fill.png" alt="moon">
+      <div class="options" id="moonOptions">
+        <div class="option">月全食</div>
+        <div class="option">月偏食</div>
+      </div>
+    </div>
+    <div class="icon" id="userIcon">
+      <img src="./logo/ui.png" alt="user">
+    </div>
+    <div class="icon" id="mapIcon">
+      <img src="./logo/map.png" alt="map">
+    </div>
+  </div>
+
+  <div id="povView">
+    <!-- Your picture-in-picture view code goes here -->
+  </div>
+
+  <script src="./lib/click.js"></script>
+  <script type="module" src="./app/app.js"></script>
+</body>
+
 </html>
