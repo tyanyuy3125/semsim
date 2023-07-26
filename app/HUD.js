@@ -5,8 +5,8 @@ const timeElement = document.querySelector("#hud .time");
 
 dateElement.style.cssText = `
     position: absolute;
-    top: 83.5%;
-    left: 35%;
+    top: 82.5%;
+    left: 37%;
     color: white;
     font-size: 18px;
     font-family: arial, helvetica, sans-serif;
@@ -16,8 +16,8 @@ dateElement.innerHTML = "";
 
 timeElement.style.cssText = `
     position: absolute;
-    top: 83.5%;
-    left: 60%;
+    top: 82.5%;
+    left: 58%;
     color: white;
     font-size: 18px;
     font-family: arial, helvetica, sans-serif;

@@ -164,8 +164,8 @@ function updateMeshs() {
 
 const clock = new THREE.Clock();
 let oldElapsedTime = 0;
-// TIME.timespeed = 1;
-// TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
+TIME.timespeed = 1;
+TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
 
 // animation loop
 const tick = () => {
@@ -180,8 +180,8 @@ const tick = () => {
 
   controls.update();
 
-  renderer.render(scene, camera);
-  // compositor.render();
+  // renderer.render(scene, camera);
+  compositor.render();
 
   window.requestAnimationFrame(tick);
 }
