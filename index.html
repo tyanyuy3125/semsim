@@ -26,9 +26,9 @@
   </div>
 
   <div id="controlPanel">
-    <input type="range" id="timeSpeed" name="timeSpeed" min="-100" max="100">
+    <input type="range" id="timeSpeed" name="timeSpeed" min="0" max="30">
     <label for="timeSpeed">速度</label>
-    <span id="speedValue">1 SEC / S</span>
+    <span id="speedValue">15 SEC / S</span>
     <div id="buttons">
       <button>SEC</button>
       <button>DAY</button>
@@ -67,11 +67,11 @@
         <div class="option">月偏食</div>
       </div>
     </div>
-    <div class="icon" id="userIcon">
-      <img src="./logo/ui.png" alt="user">
-    </div>
     <div class="icon" id="mapIcon">
       <img src="./logo/map.png" alt="map">
+    </div>
+    <div class="icon" id="userIcon">
+      <img src="./logo/ui.png" alt="user">
     </div>
   </div>
 
@@ -79,7 +79,7 @@
     <!-- Your picture-in-picture view code goes here -->
   </div>
 
-  <script src="./lib/click.js"></script>
+  <script type="module" src="./lib/click.js"></script>
   <script type="module" src="./app/app.js"></script>
 </body>
 
