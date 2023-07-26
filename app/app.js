@@ -164,8 +164,8 @@ function updateMeshs() {
 
 const clock = new THREE.Clock();
 let oldElapsedTime = 0;
-TIME.timespeed = 1;
-TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
+// TIME.timespeed = 0;
+TIME.timespeed = 24 * 60 * 60 * 1000; // UNCOMMENT TO SPEED UP TIME
 
 // animation loop
 const tick = () => {
