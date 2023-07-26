@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import TIME from "./time";
-// import * as HUD from "./HUD";
+import * as HUD from "./HUD";
 import { Compositor } from "./compositor"
 
 const sizes = {
@@ -174,7 +174,7 @@ const tick = () => {
   oldElapsedTime = elapsedTime;
   TIME.update(deltaTime);
 
-  // HUD.updateHUD();
+  HUD.updateHUD();
 
   updateMeshs();
 

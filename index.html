@@ -13,7 +13,10 @@
 
 <body>
   <div id="canvas-container"></div>
-  <div id="hud"></div>
+  <div id="hud">
+    <div class="date"></div>
+    <div class="time"></div>
+  </div>
   <div id="logo">
     <div id="team">
       <img src="./logo/team.png">
@@ -24,24 +27,20 @@
       <div id="vecline"></div>
     </div>
   </div>
-
+  <div id="pauseButton">
+    <img src="./logo/pause.png" alt="Pause">
+  </div>
   <div id="controlPanel">
-    <input type="range" id="timeSpeed" name="timeSpeed" min="0" max="30">
+    <input type="range" id="timeSpeed" name="timeSpeed" min="-100" max="100">
     <label for="timeSpeed">速度</label>
-    <span id="speedValue">15 SEC / S</span>
+    <span id="speedValue">1 DAY / S</span>
     <div id="buttons">
       <button>SEC</button>
       <button>DAY</button>
       <button>MON</button>
       <button>YEAR</button>
     </div>
-    <br>
   </div>
-
-
-  <!-- <label for="timeBar">当前时间:</label>
-    <input type="range" id="timeBar" name="timeBar" min="0" max="100">
-    <br> -->
 
   <div id="icons">
     <div class="icon" id="eyeIcon">
@@ -79,7 +78,7 @@
     <!-- Your picture-in-picture view code goes here -->
   </div>
 
-  <script type="module" src="./lib/click.js"></script>
+  <script src="./lib/click.js"></script>
   <script type="module" src="./app/app.js"></script>
 </body>
 

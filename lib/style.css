@@ -2,7 +2,6 @@
 
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
     background-color: #000000;
 }
 
@@ -18,15 +17,14 @@ body {
     height: 45px;
     left: 20px;
     top: 20px;
-    opacity: 0.5;
+    opacity: 0.4;
     border-radius: 10%;
+    transition: opacity 0.3s ease;
 }
 
 #description {
-    /* Your styles for the description go here */
     display: flex;
     flex-direction: column;
-    /* Group */
     position: absolute;
     width: 200px;
     height: 50px;
@@ -36,23 +34,25 @@ body {
 
 #title {
     position: absolute;
-    opacity: 0.5;
+    opacity: 0.4;
     color: rgb(255, 255, 255);
     font-family: '苹方-简', sans-serif;
     font-size: 16px;
     font-weight: 500;
     text-align: left;
+    transition: opacity 0.3s ease;
 }
 
 #credit {
     position: absolute;
     top: 25px;
-    opacity: 0.5;
+    opacity: 0.4;
     color: rgb(255, 255, 255);
     font-family: '苹方-简', sans-serif;
     font-size: 12px;
     font-weight: 400;
     text-align: left;
+    transition: opacity 0.3s ease;
 }
 
 #vecline {
@@ -61,10 +61,24 @@ body {
     height: 0px;
     left: 100px;
     top: 20px;
-    opacity: 0.6;
+    opacity: 0.4;
     border: 1px solid rgb(123, 121, 120);
     transform: rotate(90.00deg);
+    transition: opacity 0.3s ease;
 }
+
+#pauseButton {
+    position: absolute;
+    top: 83.5%;
+    left: 48.9%;
+    cursor: pointer;
+}
+
+#pauseButton img {
+    width: 30px;
+    height: 30px;
+}
+
 
 #controlPanel {
     position: absolute;
@@ -186,7 +200,7 @@ input[type="range"] {
 
 #povView {
     position: absolute;
-    top:20px;
+    top: 20px;
     right: 20px;
     width: 300px;
     height: 200px;

@@ -1,22 +1,37 @@
 import TIME from "./time";
 
-const hud = document.getElementById("hud");
-hud.style.cssText = `
+const dateElement = document.querySelector("#hud .date");
+const timeElement = document.querySelector("#hud .time");
+
+dateElement.style.cssText = `
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 83.5%;
+    left: 35%;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     font-family: arial, helvetica, sans-serif;
     z-index: 1;
   `;
-hud.innerHTML = "";
+dateElement.innerHTML = "";
+
+timeElement.style.cssText = `
+    position: absolute;
+    top: 83.5%;
+    left: 60%;
+    color: white;
+    font-size: 18px;
+    font-family: arial, helvetica, sans-serif;
+    z-index: 1;
+  `;
+timeElement.innerHTML = "";
 
 // update the HUD
 const updateHUD = function () {
-  hud.innerHTML = `
-    TIME: ${TIME.current.toLocaleString()}
-    `;
+  const currentDate = TIME.current.toLocaleDateString(); // Get the date component
+  const currentTime = TIME.current.toLocaleTimeString(); // Get the time component
+
+  dateElement.innerHTML = `${currentDate}`;
+  timeElement.innerHTML = `${currentTime}`;
 };
 
 export { updateHUD };
