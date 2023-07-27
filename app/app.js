@@ -111,6 +111,7 @@ const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
 earthCloud.receiveShadow = true;
 earthCloud.castShadow = true;
 earth.add(earthCloud);
+earth.remove(earthCloud);
 
 const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
   map: new THREE.TextureLoader().load("../assets/texture/sprite.png"),
@@ -197,3 +198,12 @@ const tick = () => {
 }
 
 tick();
+
+function mapSwitch() {
+  if (earth.children.includes(earthCloud)) {
+    earth.remove(earthCloud);
+  } else {
+    earth.add(earthCloud);
+  }
+}
+export { mapSwitch };
