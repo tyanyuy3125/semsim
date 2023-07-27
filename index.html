@@ -1,25 +1,96 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <title>My first three.js app</title>
-    <link rel="stylesheet" href="./style_canvas.css" />
-  </head>
-  <body>
-    <div id="canvas-container">
-      <canvas id="webgl"></canvas>
-      <!-- <div id="css3d"></div> -->
-      <div id="hud"></div>
-      <div class="celestial-label invisible" id="sun-label"><br>&nbsp;SUN</div>
-      <div class="celestial-label invisible" id="earth-label">
-        <br>&nbsp;EARTH
-        <div class="celestial-circle" id="earth-circle"></div>
-      </div>
-      <div class="celestial-label invisible" id="moon-label">
-        &nbsp;&nbsp;MOON
-        <div class="celestial-circle" id="moon-circle"></div>
+
+<head>
+  <title>天体运行模拟</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="./lib/style.css">
+</head>
+
+<body>
+  <div id="canvas-container">
+    <canvas id="webgl"></canvas>
+    <!-- <div id="css3d"></div> -->
+    <div id="hud"></div>
+    <div class="celestial-label invisible" id="sun-label"><br>&nbsp;SUN</div>
+    <div class="celestial-label invisible" id="earth-label">
+      <br>&nbsp;EARTH
+      <div class="celestial-circle" id="earth-circle"></div>
+    </div>
+    <div class="celestial-label invisible" id="moon-label">
+      &nbsp;&nbsp;MOON
+      <div class="celestial-circle" id="moon-circle"></div>
+    </div>
+  </div>
+  <div class="date"></div>
+  <div class="time"></div>
+  </div>
+  <div id="logo">
+    <div id="team">
+      <img src="./logo/team.png">
+    </div>
+    <div id="description">
+      <div id="title">天体运行模拟</div>
+      <div id="credit">by: ${TeamName}$</div>
+      <div id="vecline"></div>
+    </div>
+  </div>
+  <div id="pauseButton">
+    <img src="./logo/pause.png" alt="Pause">
+  </div>
+  <div id="controlPanel">
+    <input type="range" id="timeSpeed" name="timeSpeed" min="-30" max="30" value="1">
+    <label for="timeSpeed">速度</label>
+    <span id="speedValue">1 DAY / S</span>
+    <div id="buttons">
+      <button>SEC</button>
+      <button>MIN</button>
+      <button>HOUR</button>
+      <button>DAY</button>
+      <button>MON</button>
+      <button>YEAR</button>
+    </div>
+  </div>
+
+  <div id="icons">
+    <div class="icon" id="eyeIcon">
+      <img src="./logo/eye.png" alt="eye">
+      <div class="options" id="eyeOptions">
+        <div class="option">侧视图</div>
+        <div class="option">俯视图</div>
+        <div class="option" style="background-color: #636366;">3D模式</div>
       </div>
     </div>
-    <script type="module" src="./app/app.js"></script>
-  </body>
+    <div class="icon" id="sunIcon">
+      <img src="./logo/sun_fill.png" alt="sun">
+      <div class="options" id="sunOptions">
+        <div class="option">日全食</div>
+        <div class="option">日环食</div>
+        <div class="option">日偏食</div>
+      </div>
+    </div>
+    <div class="icon" id="moonIcon">
+      <img src="./logo/moon-fill.png" alt="moon">
+      <div class="options" id="moonOptions">
+        <div class="option">月全食</div>
+        <div class="option">月偏食</div>
+      </div>
+    </div>
+    <div class="icon" id="mapIcon">
+      <img src="./logo/map.png" alt="map">
+    </div>
+    <div class="icon" id="userIcon">
+      <img src="./logo/ui.png" alt="user">
+    </div>
+  </div>
+
+  <div id="povView">
+    <!-- Your picture-in-picture view code goes here -->
+  </div>
+
+  <script type="module" src="./lib/click.js"></script>
+  <script type="module" src="./app/app.js"></script>
+</body>
+
 </html>
