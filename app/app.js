@@ -5,7 +5,7 @@ import orbit from "./orbit";
 import * as ASTRO from "./astro.js";
 import Traveller from "./traveller.js";
 import * as OBSERVE from "./observePoints.js";
-
+import { Compositor } from "./compositor"
 const SCALE = 1000;
 
 const sizes = {
@@ -20,7 +20,10 @@ camera.position.set(0, 0.02 * SCALE, 0.15 * SCALE);
 
 let canvas = window.document.getElementById('webgl');
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 
+const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 const controls = new CustomControls(camera, renderer.domElement);
 
 const traveller = new Traveller(camera, controls);
@@ -38,6 +41,7 @@ function resizeEvent() {
 
   // update renderer
   renderer.setSize(sizes.width, sizes.height);
+  compositor.setSize(sizes.width, sizes.height);
 }
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -56,35 +60,76 @@ scene.background = new THREE.CubeTextureLoader().setPath('../assets/skybox/').lo
   'negZ.jpg',
 ]);
 
+const texLoader = new THREE.TextureLoader();
+
 // sun
 const sunGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.SunRadius / ASTRO.AU ), 32, 32);
-const sunMaterial = new THREE.MeshBasicMaterial({
-  // MeshBasicMaterial does not react to light
-  map: new THREE.TextureLoader().load("../assets/sun.jpg"),
-});
+import * as sunShader from "../assets/shader/sun";
+const sunMaterial = new THREE.ShaderMaterial(
+  {
+    vertexShader: sunShader.vertShader,
+    fragmentShader: sunShader.fragShader,
+    uniforms: 
+    {
+      uTime: { value: 0 }
+    }
+  }
+);
+
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.castShadow = false;
+sun.receiveShadow = false;
 
 // earth
 const earthGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ), 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/earth.jpg"),
+  map: texLoader.load("../assets/texture/earth_albedo.jpg"),
+  normalMap: texLoader.load("../assets/texture/earth_normal.png"),
+  roughnessMap: texLoader.load("../assets/texture/earth_roughness.png")
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
 
+// const earthCloudGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ) + 0.01, 32, 32);
+// const cloudMaterial = new THREE.MeshStandardMaterial(
+//   {
+//     color: 0xFFFFFF,
+//     alphaMap: texLoader.load("../assets/texture/earth_cloud_alpha.jpg"),
+//     transparent: true
+//   }
+// );
+// const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
+// earthCloud.receiveShadow = true;
+// earthCloud.castShadow = true;
+// earth.add(earthCloud);
+
+// const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+//   map: new THREE.TextureLoader().load("../assets/texture/sprite.png"),
+//   transparent: true,
+//   opacity: 0.1
+// }));
+// sprite.scale.set(3.4, 3.4, 1);
+// earth.add(sprite);
+
 // moon
 const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
 const moonMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/moon.jpg"),
+  map: new THREE.TextureLoader().load("../assets/texture/moon_albedo.png"),
+  bumpMap: new THREE.TextureLoader().load("../assets/texture/moon_disp.png"),
+  bumpScale: 0.1,
 });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
 moon.receiveShadow = true;
 
 // sunlight
-const sunLight = new THREE.PointLight(0xfafad2, 1);
+const sunLight = new THREE.PointLight(0xFFF6ED, 1);
 sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 16384;
+sunLight.shadow.mapSize.height = 16384;
+sunLight.shadow.camera.near = 0.5;
+sunLight.shadow.camera.far = 500;
 
 // ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
@@ -175,6 +220,9 @@ function updateLabels() {
 
 // TIME.current = new Date(2023, 3, 20, 11, 16, 44, 0); // 135.9, -16.8
 // TIME.current = new Date(2001, 11, 14, 23, 31, 56, 0); // -130.7, 52.6
+function updateTextures() {
+  sunMaterial.uniforms.uTime.value = TIME.RelativeSecondInSunCycle();
+}
 
 // animation loop
 const clock = new THREE.Clock();
@@ -188,6 +236,8 @@ const tick = () => {
   TIME.update(deltaTime);
 
   updateMeshs();
+  updateTextures();
+
   controls.update();
   traveller.update();
 
@@ -198,7 +248,8 @@ const tick = () => {
   // camera.fov = 3;
   // camera.updateProjectionMatrix();
 
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+  compositor.render();
   // IMPORTANT: update label after render
   updateLabels();
 }
