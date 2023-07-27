@@ -1,7 +1,12 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import CustomControls from "./control.js";
 import TIME from "./time";
-import * as HUD from "./HUD";
+import orbit from "./orbit";
+import * as ASTRO from "./astro.js";
+import Traveller from "./traveller.js";
+import * as OBSERVE from "./observePoints.js";
+
+const SCALE = 1000;
 
 const sizes = {
   width: window.innerWidth,
@@ -10,135 +15,242 @@ const sizes = {
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.set(0, 10, 40);
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
+camera.position.set(0, 0.02 * SCALE, 0.15 * SCALE);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(sizes.width, sizes.height);
+let canvas = window.document.getElementById('webgl');
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.maxDistance = 100;
+const controls = new CustomControls(camera, renderer.domElement);
 
-// append the renderer's canvas element as child of 'canvas-container'
-window.document
-  .getElementById("canvas-container")
-  .appendChild(renderer.domElement);
+const traveller = new Traveller(camera, controls);
 
 // resize listener
 let resizeTimeout;
+function resizeEvent() {
+  // update sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(sizes.width, sizes.height);
+}
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
-    // update sizes
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
-
-    // update camera
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
-
-    // update renderer
-    renderer.setSize(sizes.width, sizes.height);
+    resizeEvent();
   }, 500); // 500 milliseconds debounce time
 });
 
-// stupid starry background (randomly generated)
-const starsGeometry = new THREE.BufferGeometry();
-const starsMaterial = new THREE.PointsMaterial({
-  color: 0xffffff,
-  sizeAttenuation: false,
-});
-const stars = new Array(10000).fill(0).map(() => {
-  const star = new THREE.Vector3();
-  star.x = THREE.MathUtils.randFloatSpread(1000);
-  star.y = THREE.MathUtils.randFloatSpread(1000);
-  star.z = THREE.MathUtils.randFloatSpread(1000);
-  return star;
-});
-starsGeometry.setFromPoints(stars);
-const starField = new THREE.Points(starsGeometry, starsMaterial);
-scene.add(starField);
+// skybox
+scene.background = new THREE.CubeTextureLoader().setPath('../assets/skybox/').load([
+  'posX.jpg',
+  'negX.jpg',
+  'posY.jpg',
+  'negY.jpg',
+  'posZ.jpg',
+  'negZ.jpg',
+]);
 
 // sun
-const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
+const sunGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.SunRadius / ASTRO.AU ), 32, 32);
 const sunMaterial = new THREE.MeshBasicMaterial({
   // MeshBasicMaterial does not react to light
   map: new THREE.TextureLoader().load("../assets/sun.jpg"),
 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-scene.add(sun);
 
 // earth
-const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+const earthGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ), 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
   map: new THREE.TextureLoader().load("../assets/earth.jpg"),
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
-scene.add(earth);
 
 // moon
-const moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
 const moonMaterial = new THREE.MeshStandardMaterial({
   map: new THREE.TextureLoader().load("../assets/moon.jpg"),
 });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
 moon.receiveShadow = true;
-scene.add(moon);
 
 // sunlight
 const sunLight = new THREE.PointLight(0xfafad2, 1);
-sun.add(sunLight);
+sunLight.castShadow = true;
 
 // ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
-scene.add(ambientLight);
 
-earth.rotateX((-23.5 / 180) * Math.PI);
+// Earth orbit
+const earthOrbit = new orbit(camera, sun, earth, 0x87CEEB);
+const moonOrbit = new orbit(camera, earth, moon, 0xffffff);
 
-function updateMeshs() {
-  // TODO: more accurate moon position?
-  var py = TIME.ProportionInYear();
-  var pd = TIME.ProportionInDay();
-  var pl = TIME.ProportionInLunarMonth();
 
-  earth.rotation.y = (py + pd - 0.72) * 2 * Math.PI;
-  earth.position.set(
-    -20 * Math.cos((py - 0.22) * 2 * Math.PI),
-    0,
-    20 * Math.sin((py - 0.22) * 2 * Math.PI)
-  );
-
-  moon.rotation.y = (py + pl - 0.72) * 2 * Math.PI;
-  moon.position.x = earth.position.x + 3 * Math.cos((py + pl - 0.22) * 2 * Math.PI);
-  moon.position.z = earth.position.z + 3 * Math.sin((0.22 - py - pl) * 2 * Math.PI);
+function initScene() {
+  scene.add(sun);
+  scene.add(earth);
+  scene.add(moon);
+  scene.add(earthOrbit);
+  scene.add(moonOrbit);
+  sun.add(sunLight);
+  scene.add(ambientLight);
 }
 
-const clock = new THREE.Clock();
-let oldElapsedTime = 0;
-TIME.timespeed = 1;
-TIME.timespeed = 100000000; // UNCOMMENT TO SPEED UP TIME
+function updateMeshs() {
+  let earthInfo = ASTRO.getEarthInfo(TIME.current);
+  earth.position.copy(earthInfo.position).multiplyScalar(SCALE);
+  earth.rotation.y = earthInfo.rotation;
+  earth.rotation.x = -earthInfo.oblecl;
+
+  let moonInfo = ASTRO.getMoonInfo(TIME.current);
+  moon.position.copy(moonInfo.position).multiplyScalar(SCALE).add(earth.position);
+  moon.rotation.y = moonInfo.rotation;
+
+  earthOrbit.update();
+  moonOrbit.update();
+}
+
+const celestialBodies = [
+  { object: sun, label: document.getElementById("sun-label") },
+  { object: earth, label: document.getElementById("earth-label") },
+  { object: moon, label: document.getElementById("moon-label") },
+];
+function updateLabels() {
+  if (sun.position.distanceTo(camera.position) < 0.3 * SCALE) {
+    celestialBodies[0].label.classList.add('invisible');
+  } else {
+    celestialBodies[0].label.classList.remove('invisible');
+  }
+
+  if (earth.position.distanceTo(camera.position) < 0.01 * SCALE) {
+    celestialBodies[1].label.classList.add('invisible');
+    celestialBodies[2].label.classList.remove('invisible');
+  } else {
+    celestialBodies[1].label.classList.remove('invisible');
+    celestialBodies[2].label.classList.add('invisible');
+  }
+
+  if (moon.position.distanceTo(camera.position) < 0.002 * SCALE) {
+    celestialBodies[2].label.classList.add('invisible');
+    celestialBodies[1].label.classList.remove('invisible');
+  }
+
+  const raycaster = new THREE.Raycaster();
+
+  scene.remove(earthOrbit);
+  scene.remove(moonOrbit);
+  celestialBodies.forEach((body) => {
+    const vector = body.object.position.clone();
+    vector.project(camera);
+
+    // check if it's outside the front of the camera
+    if (vector.z >= 1.0000) {
+      body.label.classList.add('invisible');
+      return;
+    }
+
+    // check if it is behind another celestialbody
+    raycaster.setFromCamera(vector, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0 && intersects[0].object !== body.object) {
+      body.label.classList.add('invisible');
+      return;
+    }
+
+    const translateX = (vector.x + 1) * sizes.width * 0.5;
+    const translateY = (-vector.y + 1) * sizes.height * 0.5;
+    body.label.style.transform = `translate(${translateX}px,${translateY}px)`;
+  });
+  scene.add(moonOrbit)
+  scene.add(earthOrbit);
+}
+
+// TIME.current = new Date(2023, 3, 20, 11, 16, 44, 0); // 135.9, -16.8
+// TIME.current = new Date(2001, 11, 14, 23, 31, 56, 0); // -130.7, 52.6
 
 // animation loop
+const clock = new THREE.Clock();
+let oldElapsedTime = 0;
 const tick = () => {
+  window.requestAnimationFrame(tick);
+
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
   TIME.update(deltaTime);
 
-  HUD.updateHUD();
-
   updateMeshs();
-
   controls.update();
+  traveller.update();
+
+  // Perfect sun eclipse:
+  // camera.position.copy(earth.position);
+  // camera.position.copy(landOnEarth(-130.7, 52.6));
+  // camera.lookAt(sun.position);
+  // camera.fov = 3;
+  // camera.updateProjectionMatrix();
 
   renderer.render(scene, camera);
-
-  window.requestAnimationFrame(tick);
+  // IMPORTANT: update label after render
+  updateLabels();
 }
 
+initScene();
+resizeEvent();
+resetView();
 tick();
+
+
+// transform from lon and lat to position on earth
+function landOnEarth(lonDeg, latDeg) {
+  lonDeg = THREE.MathUtils.degToRad(lonDeg);
+  latDeg = THREE.MathUtils.degToRad(latDeg);
+  const r = 1.00 * SCALE * ( ASTRO.EarthRadius / ASTRO.AU );
+  const vec3 = new THREE.Vector3(
+    r * Math.cos(latDeg) * Math.cos(lonDeg),
+    r * Math.sin(latDeg),
+    -r * Math.cos(latDeg) * Math.sin(lonDeg)
+  );
+  var er = earth.rotation;
+  vec3.applyAxisAngle(new THREE.Vector3(0, 1, 0), er.y);
+  vec3.applyAxisAngle(new THREE.Vector3(1, 0, 0), er.x);
+  vec3.applyAxisAngle(new THREE.Vector3(0, 0, 1), er.z);
+  vec3.add(earth.position);
+  return vec3;
+}
+
+
+document.getElementById("earth-label").addEventListener("click", () => {
+  traveller.travelToTarget(earth).start();
+});
+
+document.getElementById("moon-label").addEventListener("click", () => {
+  traveller.travelToTarget(moon).start();
+});
+
+document.getElementById("sun-label").addEventListener("click", () => {
+  // traveller.travelToTarget(sun).start();
+  sideView();
+});
+
+
+// TO BE ADDED TO EVENT LISTENER:
+export function resetView() {
+  traveller.travelToTarget(OBSERVE.reset, sun).start()
+}
+
+export function topView() {
+  traveller.travelToTarget(OBSERVE.above, sun).start()
+}
+
+export function sideView() {
+  traveller.travelToTarget(OBSERVE.side, sun).start()
+}
