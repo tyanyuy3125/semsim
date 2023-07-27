@@ -2,9 +2,11 @@ import * as THREE from "three";
 import CustomControls from "./control.js";
 import TIME from "./time";
 import orbit from "./orbit";
-import * as ASTRO from "./astro.js";
 import Traveller from "./traveller.js";
+import * as ASTRO from "./astro.js";
 import * as OBSERVE from "./observePoints.js";
+import * as HUD from "./HUD.js"
+import { Compositor } from "./compositor"
 
 const SCALE = 1000;
 
@@ -16,10 +18,15 @@ const sizes = {
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
-camera.position.set(0, 0.02 * SCALE, 0.15 * SCALE);
+camera.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
 let canvas = window.document.getElementById('webgl');
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+renderer.setSize(sizes.width, sizes.height);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+
+const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 
 const controls = new CustomControls(camera, renderer.domElement);
 
@@ -38,6 +45,7 @@ function resizeEvent() {
 
   // update renderer
   renderer.setSize(sizes.width, sizes.height);
+  compositor.setSize(sizes.width, sizes.height);
 }
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -56,35 +64,75 @@ scene.background = new THREE.CubeTextureLoader().setPath('../assets/skybox/').lo
   'negZ.jpg',
 ]);
 
+const texLoader = new THREE.TextureLoader();
+
 // sun
 const sunGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.SunRadius / ASTRO.AU ), 32, 32);
-const sunMaterial = new THREE.MeshBasicMaterial({
-  // MeshBasicMaterial does not react to light
-  map: new THREE.TextureLoader().load("../assets/sun.jpg"),
-});
+import * as sunShader from "../assets/shader/sun";
+const sunMaterial = new THREE.ShaderMaterial(
+  {
+    vertexShader: sunShader.vertShader,
+    fragmentShader: sunShader.fragShader,
+    uniforms: 
+    {
+      uTime: { value: 0 }
+    }
+  }
+);
+
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.castShadow = false;
+sun.receiveShadow = false;
 
 // earth
 const earthGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ), 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/earth.jpg"),
+  map: texLoader.load("../assets/texture/earth_albedo.jpg"),
+  normalMap: texLoader.load("../assets/texture/earth_normal.png"),
+  roughnessMap: texLoader.load("../assets/texture/earth_roughness.png")
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
 
+const earthCloudGeometry = new THREE.SphereGeometry(1.01 * earthGeometry.parameters.radius, 32, 32);
+const cloudMaterial = new THREE.MeshStandardMaterial(
+  {
+    color: 0xFFFFFF,
+    alphaMap: texLoader.load("../assets/texture/earth_cloud_alpha.jpg"),
+    transparent: true
+  }
+);
+const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
+earthCloud.receiveShadow = true;
+earthCloud.castShadow = true;
+
+const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: new THREE.TextureLoader().load("../assets/texture/sprite.png"),
+  transparent: true,
+  opacity: 0.1
+}));
+sprite.scale.set(0.15, 0.15, 1);
+
+
 // moon
 const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
 const moonMaterial = new THREE.MeshStandardMaterial({
-  map: new THREE.TextureLoader().load("../assets/moon.jpg"),
+  map: new THREE.TextureLoader().load("../assets/texture/moon_albedo.png"),
+  bumpMap: new THREE.TextureLoader().load("../assets/texture/moon_disp.png"),
+  bumpScale: 0.0015,
 });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true;
 moon.receiveShadow = true;
 
 // sunlight
-const sunLight = new THREE.PointLight(0xfafad2, 1);
+const sunLight = new THREE.PointLight(0xFFF6ED, 1);
 sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 16384;
+sunLight.shadow.mapSize.height = 16384;
+sunLight.shadow.camera.near = 0.021;
+sunLight.shadow.camera.far = 3*SCALE;
 
 // ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
@@ -97,6 +145,8 @@ const moonOrbit = new orbit(camera, earth, moon, 0xffffff);
 function initScene() {
   scene.add(sun);
   scene.add(earth);
+  earth.add(sprite);
+  earth.add(earthCloud);
   scene.add(moon);
   scene.add(earthOrbit);
   scene.add(moonOrbit);
@@ -118,63 +168,77 @@ function updateMeshs() {
   moonOrbit.update();
 }
 
-const celestialBodies = [
-  { object: sun, label: document.getElementById("sun-label") },
-  { object: earth, label: document.getElementById("earth-label") },
-  { object: moon, label: document.getElementById("moon-label") },
-];
-function updateLabels() {
-  if (sun.position.distanceTo(camera.position) < 0.3 * SCALE) {
-    celestialBodies[0].label.classList.add('invisible');
-  } else {
-    celestialBodies[0].label.classList.remove('invisible');
+const sunLabel = document.getElementById("sun-label");
+const earthLabel = document.getElementById("earth-label");
+const moonLabel = document.getElementById("moon-label");
+
+const pushConcealIgnore = () => {
+  scene.remove(earthOrbit);
+  scene.remove(moonOrbit);
+  earth.remove(earthCloud);
+  earth.remove(sprite);
+}
+
+const popConcealIgnore = () => {
+  scene.add(moonOrbit);
+  scene.add(earthOrbit);
+  earth.add(earthCloud);
+  earth.add(sprite);
+}
+
+const labelConceal = (object, label, raycaster) => {
+  const vector = object.position.clone();
+  vector.project(camera);
+
+  // check if it's outside the front of the camera
+  if (vector.z >= 1.0000) {
+    label.classList.add('invisible');
+    return;
   }
 
-  if (earth.position.distanceTo(camera.position) < 0.01 * SCALE) {
-    celestialBodies[1].label.classList.add('invisible');
-    celestialBodies[2].label.classList.remove('invisible');
-  } else {
-    celestialBodies[1].label.classList.remove('invisible');
-    celestialBodies[2].label.classList.add('invisible');
+  // check if it is behind another celestialbody
+  raycaster.setFromCamera(vector, camera);
+  const intersects = raycaster.intersectObjects(scene.children);
+  if (intersects.length > 0 && intersects[0].object !== object) {
+    label.classList.add('invisible');
+    return;
   }
+
+  const translateX = (vector.x + 1) * sizes.width * 0.5;
+  const translateY = (-vector.y + 1) * sizes.height * 0.5;
+  label.style.transform = `translate(${translateX}px,${translateY}px)`;
+};
+
+function updateLabels() {
+  (sun.position.distanceTo(camera.position) < 0.3 * SCALE) ?
+    sunLabel.classList.add('invisible') :
+    sunLabel.classList.remove('invisible');
+
+  (earth.position.distanceTo(camera.position) < 0.01 * SCALE) ?
+    (earthLabel.classList.add('invisible'),
+      moonLabel.classList.remove('invisible'))
+    :
+    (earthLabel.classList.remove('invisible'),
+      moonLabel.classList.add('invisible'));
 
   if (moon.position.distanceTo(camera.position) < 0.002 * SCALE) {
-    celestialBodies[2].label.classList.add('invisible');
-    celestialBodies[1].label.classList.remove('invisible');
+    moonLabel.classList.add('invisible');
+    earthLabel.classList.remove('invisible');
   }
 
   const raycaster = new THREE.Raycaster();
-
-  scene.remove(earthOrbit);
-  scene.remove(moonOrbit);
-  celestialBodies.forEach((body) => {
-    const vector = body.object.position.clone();
-    vector.project(camera);
-
-    // check if it's outside the front of the camera
-    if (vector.z >= 1.0000) {
-      body.label.classList.add('invisible');
-      return;
-    }
-
-    // check if it is behind another celestialbody
-    raycaster.setFromCamera(vector, camera);
-    const intersects = raycaster.intersectObjects(scene.children);
-    if (intersects.length > 0 && intersects[0].object !== body.object) {
-      body.label.classList.add('invisible');
-      return;
-    }
-
-    const translateX = (vector.x + 1) * sizes.width * 0.5;
-    const translateY = (-vector.y + 1) * sizes.height * 0.5;
-    body.label.style.transform = `translate(${translateX}px,${translateY}px)`;
-  });
-  scene.add(moonOrbit)
-  scene.add(earthOrbit);
+  pushConcealIgnore();
+  labelConceal(sun, sunLabel, raycaster);
+  labelConceal(earth, earthLabel, raycaster);
+  labelConceal(moon, moonLabel, raycaster);
+  popConcealIgnore();
 }
 
 // TIME.current = new Date(2023, 3, 20, 11, 16, 44, 0); // 135.9, -16.8
 // TIME.current = new Date(2001, 11, 14, 23, 31, 56, 0); // -130.7, 52.6
+function updateTextures() {
+  sunMaterial.uniforms.uTime.value = TIME.RelativeSecondInSunCycle();
+}
 
 // animation loop
 const clock = new THREE.Clock();
@@ -187,7 +251,12 @@ const tick = () => {
   oldElapsedTime = elapsedTime;
   TIME.update(deltaTime);
 
+  HUD.updateHUD();
+
   updateMeshs();
+
+  updateTextures();
+
   controls.update();
   traveller.update();
 
@@ -198,14 +267,14 @@ const tick = () => {
   // camera.fov = 3;
   // camera.updateProjectionMatrix();
 
-  renderer.render(scene, camera);
   // IMPORTANT: update label after render
+  // renderer.render(scene, camera);
+  compositor.render();
   updateLabels();
 }
 
 initScene();
 resizeEvent();
-resetView();
 tick();
 
 
@@ -244,6 +313,7 @@ document.getElementById("sun-label").addEventListener("click", () => {
 // TO BE ADDED TO EVENT LISTENER:
 export function resetView() {
   traveller.travelToTarget(OBSERVE.reset, sun).start()
+  controls.maxDistance = 2000;
 }
 
 export function topView() {

@@ -31,11 +31,17 @@ const TIME = {
     return (c - o - Math.floor((c - o) / t) * t) / t;
   },
 
+  RelativeSecondInSunCycle: function () {
+    var c = current.getTime();
+    var o = newMoonEpoch.getTime();
+    var t = c - o;
+    return (t / 2203850000);
+  },
 
 
   // `TIME.update()` should only be called in tick function
   update: function (delta) {
-    current.setTime(current.getTime() + delta * timespeed * 1000);
+    current.setTime(current.getTime() + delta * timespeed);
   },
 
 

@@ -48,8 +48,13 @@ class orbit extends Line2 {
     // dynamic opacity
     const distance = this.surroundObject.position.distanceTo(this.camera.position);
     const invisibleDistance = 30 * this.surroundObject.geometry.parameters.radius;
-    const opacity = (distance - invisibleDistance) / invisibleDistance;
-    this.material.opacity = opacity;
+    // const opacity = (distance - invisibleDistance) / invisibleDistance;
+    // this.material.opacity = opacity;
+    if (distance < invisibleDistance) {
+      this.visible = false;
+    } else {
+      this.visible = true;
+    }
   }
 }
 

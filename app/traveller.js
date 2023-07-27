@@ -37,6 +37,7 @@ class Traveller {
       offsetVec3
     );
 
+    this.dispatchLaunchEvent();
     const aimTween = this.aimAtTarget(focus, moveDuration * 0.5);
     return aimTween.onComplete(() => {
       new TWEEN.Tween(this.camera.position)
@@ -47,6 +48,7 @@ class Traveller {
           arrivalPosition.addVectors(targetObject.position, offsetVec3);
         })
         .start()
+        .onComplete(() => this.dispatchArriveEvent());
     });
   }
 
