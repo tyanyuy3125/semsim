@@ -6,20 +6,17 @@ Link vertShader & fragShader exported to corresponding three.js targets.
 */
 
 const vertShader = /*glsl*/ `
-varying vec2 vUv;
-varying vec3 pos;
+varying vec3 vPos;
 
 void main()
 {
-  vUv = uv;
   gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);
-  pos = position;
+  vPos = position;
 }
 `;
 
 const fragShader = /*glsl*/ `
-varying vec2 vUv;
-varying vec3 pos;
+varying vec3 vPos;
 uniform float uTime;
 
 // 4D Noise
@@ -184,9 +181,9 @@ void main()
 {
   float texTime = uTime * 2.0f;
   // Layered noise gives better result.
-  vec3 surfaceColor = 0.35f * cnoise(vec4(pos*8.0f, texTime)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f);
-  surfaceColor += 0.25f * (cnoise(vec4(pos*16.0f, texTime * 8.0f)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f));
-  surfaceColor += 0.4f * (cnoise(vec4(pos*2.0f, texTime * 2.0f)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f));
+  vec3 surfaceColor = 0.35f * cnoise(vec4(vPos*8.0f, texTime)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f);
+  surfaceColor += 0.25f * (cnoise(vec4(vPos*16.0f, texTime * 8.0f)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f));
+  surfaceColor += 0.4f * (cnoise(vec4(vPos*2.0f, texTime * 2.0f)) * vec3(1.0f, 0.965f, 0.929f) + vec3(0.945f, 0.551f, 0.0f));
   // Emissive factor.
   surfaceColor *= 5.0f;
   gl_FragColor = vec4(surfaceColor, 1.0f);
