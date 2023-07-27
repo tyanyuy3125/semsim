@@ -1,0 +1,93 @@
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+div::-webkit-scrollbar{
+  display: none;
+}
+
+#canvas-container {
+  background: black;
+  width: 100%;
+  height: 100%;
+  caret-color: transparent;
+}
+
+#css3d {
+  background: transparent;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+#webgl  {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.celestial-label {
+  position: absolute;
+  margin-top: -5px;
+  left: 0;
+  top: 0;
+  height: 13px;
+  width: 50px;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.3em;
+}
+
+/* turn red when mouse over */
+.celestial-label:hover {
+  cursor: pointer;
+}
+
+#sun-label:hover {
+  color: white;
+}
+
+#earth-label {
+  color: skyblue;
+}
+
+#earth-label:hover {
+  color: white;
+}
+
+
+#sun-label {
+  color: tan;
+}
+
+#moon-label {
+  color: white;
+}
+
+#moon-circle {
+  border: 1.5px solid white;
+}
+
+.celestial-circle {
+  position: absolute;
+  margin-left: -10px;
+  margin-top: -10px;
+  left: 0;
+  top: 0%;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  border: 1.5px solid skyblue;
+}
+
+.celestial-circle:hover {
+  cursor: pointer;
+  border: 1.5px solid white;
+}
+
+.invisible {
+  display: none;
+}

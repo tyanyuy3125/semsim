@@ -4,6 +4,7 @@
   <title>天体运行模拟</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="./lib/style.css">
+  <link rel="stylesheet" href="./style_canvas.css" />
   <style>
     body {
       margin: 0;
@@ -12,7 +13,19 @@
 </head>
 
 <body>
-  <div id="canvas-container"></div>
+  <div id="canvas-container">
+    <canvas id="webgl"></canvas>
+    <!-- <div id="css3d"></div> -->
+    <div class="celestial-label invisible" id="sun-label"><br>&nbsp;SUN</div>
+    <div class="celestial-label invisible" id="earth-label">
+      <br>&nbsp;EARTH
+      <div class="celestial-circle" id="earth-circle"></div>
+    </div>
+    <div class="celestial-label invisible" id="moon-label">
+      &nbsp;&nbsp;MOON
+      <div class="celestial-circle" id="moon-circle"></div>
+    </div>
+  </div>
   <div id="hud">
     <div class="date"></div>
     <div class="time"></div>
