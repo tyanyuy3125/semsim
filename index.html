@@ -1,16 +1,25 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
     <title>My first three.js app</title>
-    <style>
-      body {
-        margin: 0;
-      }
-    </style>
+    <link rel="stylesheet" href="./style_canvas.css" />
   </head>
   <body>
-    <div id="canvas-container"></div>
-    <div id="hud"></div>
+    <div id="canvas-container">
+      <canvas id="webgl"></canvas>
+      <!-- <div id="css3d"></div> -->
+      <div id="hud"></div>
+      <div class="celestial-label invisible" id="sun-label"><br>&nbsp;SUN</div>
+      <div class="celestial-label invisible" id="earth-label">
+        <br>&nbsp;EARTH
+        <div class="celestial-circle" id="earth-circle"></div>
+      </div>
+      <div class="celestial-label invisible" id="moon-label">
+        &nbsp;&nbsp;MOON
+        <div class="celestial-circle" id="moon-circle"></div>
+      </div>
+    </div>
     <script type="module" src="./app/app.js"></script>
   </body>
 </html>
