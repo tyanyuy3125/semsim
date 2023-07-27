@@ -237,8 +237,7 @@ document.getElementById("moon-label").addEventListener("click", () => {
 });
 
 document.getElementById("sun-label").addEventListener("click", () => {
-  // traveller.travelToTarget(sun).start();
-  sideView();
+  traveller.travelToTarget(sun).start();
 });
 
 
