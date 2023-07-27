@@ -1,0 +1,304 @@
+@charset "utf-8";
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000000;
+    margin: 0;
+}
+
+/* by yang lang */
+#canvas-container {
+    background: black;
+    width: 100%;
+    height: 100%;
+}
+
+#css3d {
+    background: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#webgl {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#hud {
+    font-style: italic;
+    letter-spacing: 0.1em;
+    word-spacing: 8;
+}
+
+
+.celestial-label {
+    position: absolute;
+    margin-top: -5px;
+    left: 0;
+    top: 0;
+    height: 13px;
+    width: 50px;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.3em;
+}
+
+/* turn red when mouse over */
+.celestial-label:hover {
+    cursor: pointer;
+}
+
+#sun-label:hover {
+    color: white;
+}
+
+#earth-label {
+    color: skyblue;
+}
+
+#earth-label:hover {
+    color: white;
+}
+
+
+#sun-label {
+    color: tan;
+}
+
+#moon-label {
+    color: white;
+}
+
+#moon-circle {
+    border: 1.5px solid white;
+}
+
+.celestial-circle {
+    position: absolute;
+    margin-left: -10px;
+    margin-top: -10px;
+    left: 0;
+    top: 0%;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: 1.5px solid skyblue;
+}
+
+.celestial-circle:hover {
+    cursor: pointer;
+    border: 1.5px solid white;
+}
+
+.invisible {
+    display: none;
+}
+
+/* by yi yujie */
+
+#logo {
+    display: flex;
+    align-items: center;
+}
+
+#logo #team img {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    left: 20px;
+    top: 20px;
+    opacity: 0.4;
+    border-radius: 10%;
+    transition: opacity 0.3s ease;
+}
+
+#description {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    left: 75px;
+    top: 20px;
+}
+
+#title {
+    position: absolute;
+    opacity: 0.4;
+    color: rgb(255, 255, 255);
+    font-family: '苹方-简', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    transition: opacity 0.3s ease;
+}
+
+#credit {
+    position: absolute;
+    top: 25px;
+    opacity: 0.4;
+    color: rgb(255, 255, 255);
+    font-family: '苹方-简', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: left;
+    transition: opacity 0.3s ease;
+}
+
+#vecline {
+    position: absolute;
+    width: 45px;
+    height: 0px;
+    left: 100px;
+    top: 20px;
+    opacity: 0.4;
+    border: 1px solid rgb(123, 121, 120);
+    transform: rotate(90.00deg);
+    transition: opacity 0.3s ease;
+}
+
+#pauseButton {
+    position: absolute;
+    top: 82.5%;
+    left: 49%;
+    cursor: pointer;
+}
+
+#pauseButton img {
+    width: 30px;
+    height: 30px;
+}
+
+
+#controlPanel {
+    position: absolute;
+    width: 400px;
+    height: 100px;
+    left: 50%;
+    top: 93%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#controlPanel label[for="timeSpeed"] {
+    color: white;
+    font-size: 16px;
+}
+
+#speedValue {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 400px;
+}
+
+#buttons button {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    width: 60px;
+}
+
+#buttons button:hover {
+    background-color: white;
+    color: black;
+}
+
+#icons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.icon {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.icon img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.options {
+    display: none;
+    position: absolute;
+    background: transparent;
+    padding: 5px;
+    border-radius: 5px;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    /* white-space: nowrap; */
+}
+
+.option {
+    cursor: pointer;
+    padding: 5px;
+    width: 60px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    color: #FFFFFF;
+    background-color: transparent;
+}
+
+.show {
+    display: flex;
+    /* Display the options horizontally */
+    flex-direction: row;
+    /* Ensure the options are placed in a row */
+    /* right: 150%; */
+}
+
+.option:not(:last-child) {
+    border-right: 1px solid #888;
+}
+
+
+#povView {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    height: 200px;
+    border: 1px solid #333333;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#povView video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
