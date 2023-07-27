@@ -27,13 +27,6 @@ div::-webkit-scrollbar{
   top: 0;
 }
 
-#hud {
-  font-style: italic;
-  letter-spacing: 0.1em;
-  word-spacing: 8;
-}
-
-
 .celestial-label {
   position: absolute;
   margin-top: -5px;

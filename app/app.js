@@ -114,6 +114,9 @@ const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
 }));
 sprite.scale.set(0.15, 0.15, 1);
 
+earth.add(earthCloud);
+earth.remove(earthCloud);
+
 
 // moon
 const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
@@ -323,3 +326,14 @@ export function topView() {
 export function sideView() {
   traveller.travelToTarget(OBSERVE.side, sun).start()
 }
+
+// oringal method doesn't work and may cause frame drop?
+export function mapSwitch() {
+  // if (earth.children.includes(earthCloud)) {
+  //   earth.remove(earthCloud);
+  // } else {
+  //   earth.add(earthCloud);
+  // }
+  earthCloud.visible = !earthCloud.visible;
+}
+// export { mapSwitch };
