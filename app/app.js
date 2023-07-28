@@ -99,6 +99,9 @@ const earthMaterial = new THREE.MeshStandardMaterial({
   normalMap: texLoader.load("../assets/texture/earth_normal.png"),
   roughnessMap: texLoader.load("../assets/texture/earth_roughness.png")
 });
+const earthTerritoryMaterial = new THREE.MeshBasicMaterial({
+  map: texLoader.load("../assets/texture/earth_territory.jpg")
+});
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
@@ -381,6 +384,15 @@ export function mapSwitch() {
   //   earth.add(earthCloud);
   // }
   earthCloud.visible = !earthCloud.visible;
+  sprite.visible = !sprite.visible;
+  if(earthCloud.visible)
+  {
+    earth.material = earthMaterial;
+  }
+  else
+  {
+    earth.material = earthTerritoryMaterial;
+  }
 }
 
 
