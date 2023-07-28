@@ -20,7 +20,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
 camera.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
-const camera2 = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
+const camera2 = new THREE.PerspectiveCamera(75, 300 / 200, 0.021, 50000);
 camera2.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
 
@@ -32,6 +32,7 @@ renderer.shadowMap.type = THREE.PCFShadowMap;
 
 let canvas2 = window.document.getElementById('webgl2');
 const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2 });
+renderer2.setSize(300, 200);
 renderer2.shadowMap.enabled = true;
 renderer2.shadowMap.type = THREE.PCFShadowMap;
 

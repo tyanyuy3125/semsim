@@ -10,7 +10,7 @@ class orbit extends Line2 {
     const geometry = new LineGeometry();
     const material = new LineMaterial({
       color: color,
-      linewidth: 1.5,
+      linewidth: 2,
       alphaToCoverage: true,
     });
 
