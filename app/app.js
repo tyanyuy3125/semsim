@@ -118,6 +118,7 @@ const cloudMaterial = new THREE.MeshStandardMaterial(
 const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
 earthCloud.receiveShadow = true;
 earthCloud.castShadow = true;
+earthCloud.name = "cloud";
 
 const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
   map: new THREE.TextureLoader().load("../assets/texture/sprite.png"),
@@ -141,7 +142,6 @@ moon.castShadow = true;
 moon.receiveShadow = true;
 
 // sunlight
-// const sunLight = new THREE.PointLight(0xFFF6ED, 1);
 const sunLight = new THREE.DirectionalLight(0xFFF6ED, 1);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 4096;
@@ -178,7 +178,7 @@ function updateMeshs() {
   const sunPosition = sun.position.clone();
   scene.traverse(
     function ( object ) {
-      if ( object instanceof THREE.Mesh ) {
+      if ( object instanceof THREE.Mesh && object.name != "cloud" ) {
         object.position.subVectors( object.position, sunPosition );
       }
     }
@@ -195,7 +195,7 @@ function updateMeshs() {
   const tempObjectPosition = ControlObject.position.clone();
   scene.traverse(
     function ( object ) {
-      if ( object instanceof THREE.Mesh ) {
+      if ( object instanceof THREE.Mesh && object.name != "cloud" ) {
         object.position.subVectors( object.position, tempObjectPosition )
       }
     }
