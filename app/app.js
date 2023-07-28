@@ -411,9 +411,17 @@ resetView_.addEventListener("click", (event) => {
 });
 
 sunIcon.addEventListener("click", (event) => {
-  isSun = true;
+  setSun();
 });
 
 moonIcon.addEventListener("click", (event) => {
-  isSun = false;
+  setMoon();
 });
+
+export function setSun() {
+  isSun = true;
+}
+
+export function setMoon() {
+  isSun = false;
+}
