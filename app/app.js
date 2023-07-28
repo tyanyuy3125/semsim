@@ -304,6 +304,7 @@ const tick = () => {
   // camera2.position.copy(landOnEarth(-130.7, 52.6));
   if(isSun) {
     camera2.lookAt(sun.position);
+    camera2.position.copy(landOnEarth(175, -9.5182));
   } else {
     camera2.lookAt(moon.position);
   };
