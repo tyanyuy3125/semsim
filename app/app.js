@@ -39,7 +39,6 @@ const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.he
 
 const controls = new CustomControls(camera, renderer.domElement);
 
-const traveller = new Traveller(camera, controls);
 
 // resize listener
 let resizeTimeout;
@@ -167,7 +166,20 @@ function initScene() {
   sunLight.target = earth;
 }
 
+var ControlObject = sun;
+const traveller = new Traveller(camera, controls);
+
 function updateMeshs() {
+  const oldControlObjectPosition = ControlObject.position.clone();
+  const sunPosition = sun.position.clone();
+  scene.traverse(
+    function ( object ) {
+      if ( object instanceof THREE.Mesh ) {
+        object.position.subVectors( object.position, sunPosition );
+      }
+    }
+  )
+
   let earthInfo = ASTRO.getEarthInfo(TIME.current);
   earth.position.copy(earthInfo.position).multiplyScalar(SCALE);
   earth.rotation.y = earthInfo.rotation;
@@ -176,9 +188,18 @@ function updateMeshs() {
   let moonInfo = ASTRO.getMoonInfo(TIME.current);
   moon.position.copy(moonInfo.position).multiplyScalar(SCALE).add(earth.position);
   moon.rotation.y = moonInfo.rotation;
-
-  earthOrbit.update();
+  const tempObjectPosition = ControlObject.position.clone();
+  scene.traverse(
+    function ( object ) {
+      if ( object instanceof THREE.Mesh ) {
+        object.position.subVectors( object.position, tempObjectPosition )
+      }
+    }
+  )
+  camera.position.sub(oldControlObjectPosition);
+  // camera2.position.sub(oldControlObjectPosition);
   moonOrbit.update();
+  earthOrbit.update();
 }
 
 const sunLabel = document.getElementById("sun-label");
@@ -318,30 +339,38 @@ function landOnEarth(lonDeg, latDeg) {
 
 
 document.getElementById("earth-label").addEventListener("click", () => {
+  traveller.dispatchArriveEvent = () => {
+    ControlObject = earth;
+  }
   traveller.travelToTarget(earth).start();
 });
 
 document.getElementById("moon-label").addEventListener("click", () => {
+  traveller.dispatchArriveEvent = () => {
+    ControlObject = moon;
+  }
   traveller.travelToTarget(moon).start();
 });
 
 document.getElementById("sun-label").addEventListener("click", () => {
+  traveller.dispatchArriveEvent = () => {
+    ControlObject = sun;
+  }
   traveller.travelToTarget(sun).start();
 });
 
 
 // TO BE ADDED TO EVENT LISTENER:
 export function resetView() {
-  traveller.travelToTarget(OBSERVE.reset, sun).start()
-  controls.maxDistance = 2000;
+  traveller.travelToTarget(OBSERVE.reset, ControlObject).start()
 }
 
 export function topView() {
-  traveller.travelToTarget(OBSERVE.above, sun).start()
+  traveller.travelToTarget(OBSERVE.above, ControlObject).start()
 }
 
 export function sideView() {
-  traveller.travelToTarget(OBSERVE.side, sun).start()
+  traveller.travelToTarget(OBSERVE.side, ControlObject).start()
 }
 
 // oringal method doesn't work and may cause frame drop?

@@ -38,34 +38,38 @@ class Traveller {
       offsetVec3
     );
 
+    this.controls.enabled = false;
     this.dispatchLaunchEvent();
     const aimTween = this.aimAtTarget(focus, moveDuration * 0.5);
     return aimTween.onComplete(() => {
       new TWEEN.Tween(this.camera.position)
         .to(arrivalPosition, moveDuration)
-        .easing(TWEEN.Easing.Cubic.Out)
+        // .easing(TWEEN.Easing.Cubic.Out)
         .onUpdate(() => {
           this.controls.target = focus.position;
           arrivalPosition.addVectors(targetObject.position, offsetVec3);
         })
         .start()
-        .onComplete(() => this.dispatchArriveEvent());
+        .onComplete(() => { 
+          this.controls.enabled = true;
+          this.dispatchArriveEvent() 
+        });
     });
   }
 
   // Call this in tick process
   update() {
     TWEEN.update();
-
-    
   }
 
   dispatchLaunchEvent() {
-    this.controls.enabled = false;
   }
 
   dispatchArriveEvent() {
-    this.controls.enabled = true;
+  }
+
+  get isTraveling() {
+    return TWEEN.getAll().length > 0;
   }
 }
 
