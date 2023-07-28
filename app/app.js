@@ -142,7 +142,6 @@ moon.castShadow = true;
 moon.receiveShadow = true;
 
 // sunlight
-// const sunLight = new THREE.PointLight(0xFFF6ED, 1);
 const sunLight = new THREE.DirectionalLight(0xFFF6ED, 1);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 4096;
