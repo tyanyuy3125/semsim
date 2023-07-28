@@ -336,4 +336,16 @@ export function mapSwitch() {
   // }
   earthCloud.visible = !earthCloud.visible;
 }
-// export { mapSwitch };
+
+
+topView_.addEventListener("click", (event) => {
+  topView();
+});
+
+sideView_.addEventListener("click", (event) => {
+  sideView();
+});
+
+resetView_.addEventListener("click", (event) => {
+  resetView();
+});
