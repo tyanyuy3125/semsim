@@ -37,6 +37,7 @@ renderer2.shadowMap.enabled = true;
 renderer2.shadowMap.type = THREE.PCFShadowMap;
 
 const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
+const compositor2 = new Compositor(renderer2, scene, camera2, 300, 200);
 
 const controls = new CustomControls(camera, renderer.domElement);
 
@@ -308,14 +309,17 @@ const tick = () => {
   } else {
     camera2.lookAt(moon.position);
   };
-  camera2.fov = 3;
+  camera2.fov = 1.5;
   camera2.updateProjectionMatrix();
 
   // IMPORTANT: update label after render
   // renderer.render(scene, camera);
   compositor.render();
 
-  renderer2.render(scene, camera2);
+  // renderer2.render(scene, camera2);
+  moonOrbit.visible = false;
+  earthOrbit.visible = false;
+  compositor2.render();
   updateLabels();
 }
 
