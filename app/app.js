@@ -25,13 +25,13 @@ camera2.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
 
 let canvas = window.document.getElementById('webgl');
-const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
 renderer.setSize(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 
 let canvas2 = window.document.getElementById('webgl2');
-const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2, alpha: true });
+const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2 });
 
 const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 
@@ -119,11 +119,10 @@ const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
   transparent: true,
   opacity: 0.1
 }));
-sprite.scale.set(0.15, 0.15, 1);
+sprite.scale.set(0.145, 0.145, 1);
 
 earth.add(earthCloud);
 earth.remove(earthCloud);
-
 
 // moon
 const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
