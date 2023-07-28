@@ -26,6 +26,7 @@ class Traveller {
   // targetObject: the object to travel to
   // focus : the object to look at when travelling
   travelToTarget(targetObject, focus, moveDuration = 2000) {
+
     focus = focus || targetObject;
     const scalar = targetObject.geometry.parameters.radius;
     let offsetVec3 = new THREE.Vector3()
@@ -55,6 +56,8 @@ class Traveller {
   // Call this in tick process
   update() {
     TWEEN.update();
+
+    
   }
 
   dispatchLaunchEvent() {

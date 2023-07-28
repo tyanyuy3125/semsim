@@ -11,10 +11,13 @@ class CustomTrackballControls extends TrackballControls {
     this.enableDamping = true;
     this.dampingFactor = 0.1; 
     this.noPan = true;
+    // this.noZoom = true;
     // this.lastTarget = new THREE.Vector3().copy(this.target);
 
     this.addEventListener('change', () => {
       this.isMouseWheelMoving = true;
+
+      
     });
   }
 

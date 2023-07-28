@@ -32,6 +32,8 @@ renderer.shadowMap.type = THREE.PCFShadowMap;
 
 let canvas2 = window.document.getElementById('webgl2');
 const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2 });
+renderer2.shadowMap.enabled = true;
+renderer2.shadowMap.type = THREE.PCFShadowMap;
 
 const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 
@@ -136,10 +138,11 @@ moon.castShadow = true;
 moon.receiveShadow = true;
 
 // sunlight
-const sunLight = new THREE.PointLight(0xFFF6ED, 1);
+// const sunLight = new THREE.PointLight(0xFFF6ED, 1);
+const sunLight = new THREE.DirectionalLight(0xFFF6ED, 1);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 16384;
-sunLight.shadow.mapSize.height = 16384;
+sunLight.shadow.mapSize.width = 4096;
+sunLight.shadow.mapSize.height = 4096;
 sunLight.shadow.camera.near = 0.021;
 sunLight.shadow.camera.far = 3*SCALE;
 
@@ -161,6 +164,7 @@ function initScene() {
   scene.add(moonOrbit);
   sun.add(sunLight);
   scene.add(ambientLight);
+  sunLight.target = earth;
 }
 
 function updateMeshs() {
