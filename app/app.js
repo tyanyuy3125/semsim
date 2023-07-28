@@ -20,11 +20,18 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
 camera.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
+const camera2 = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
+camera2.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
+
+
 let canvas = window.document.getElementById('webgl');
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas, alpha: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
+
+let canvas2 = window.document.getElementById('webgl2');
+const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2, alpha: true });
 
 const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 
@@ -246,6 +253,7 @@ function updateTextures() {
 // animation loop
 const clock = new THREE.Clock();
 let oldElapsedTime = 0;
+let isSun = true;
 const tick = () => {
   window.requestAnimationFrame(tick);
 
@@ -264,15 +272,21 @@ const tick = () => {
   traveller.update();
 
   // Perfect sun eclipse:
-  // camera.position.copy(earth.position);
-  // camera.position.copy(landOnEarth(-130.7, 52.6));
-  // camera.lookAt(sun.position);
-  // camera.fov = 3;
-  // camera.updateProjectionMatrix();
+  camera2.position.copy(earth.position);
+  // camera2.position.copy(landOnEarth(-130.7, 52.6));
+  if(isSun) {
+    camera2.lookAt(sun.position);
+  } else {
+    camera2.lookAt(moon.position);
+  };
+  camera2.fov = 3;
+  camera2.updateProjectionMatrix();
 
   // IMPORTANT: update label after render
   // renderer.render(scene, camera);
   compositor.render();
+
+  renderer2.render(scene, camera2);
   updateLabels();
 }
 
@@ -348,4 +362,12 @@ sideView_.addEventListener("click", (event) => {
 
 resetView_.addEventListener("click", (event) => {
   resetView();
+});
+
+sunIcon.addEventListener("click", (event) => {
+  isSun = true;
+});
+
+moonIcon.addEventListener("click", (event) => {
+  isSun = false;
 });
