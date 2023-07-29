@@ -111,7 +111,7 @@ export function getMoonInfo(date) {
 
   return {
     position: new Vector3(xh, zh, -yh),
-    rotation: lon * DEG, // We assume the moon's front is always facing the earth
+    rotation: lon * DEG + Math.PI, // We assume the moon's front is always facing the earth
     r: r
   };
 }
