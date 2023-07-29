@@ -2,6 +2,8 @@
 // Stores several fixed observer points for switching perspectives.
 
 import * as THREE from 'three';
+
+// We use transparent objects as camera anchors.
 export const observeGeometry = new THREE.SphereGeometry(10, 32, 32);
 const ghostMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0});
 export const above = new THREE.Mesh(observeGeometry, ghostMaterial);
