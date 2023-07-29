@@ -1,15 +1,20 @@
 // Entry point of the application.
 
 import * as THREE from "three";
-import CustomControls from "./control.js";
-import TIME from "./time";
-import orbit from "./orbit";
-import Traveller from "./traveller.js";
-import * as ASTRO from "./astro.js";
-import * as OBSERVE from "./observePoints.js";
-import * as HUD from "./HUD.js"
-import { Compositor } from "./compositor"
-import * as sunShader from "../assets/shader/sun";
+
+import CustomControls from "./perspective/control.js";
+import Traveller from "./perspective/traveller.js";
+import * as Observe from "./perspective/observePoints.js";
+
+import TIME from "./simulation/time.js";
+import * as Astro from "./simulation/astro.js";
+
+import Orbit from "./graphics/orbit.js";
+import Compositor from "./graphics/compositor.js"
+
+import * as SunShader from "../assets/shader/sun";
+
+import * as HUD from "./interface/HUD.js"
 
 // Overscall relative scale of solar system.
 const SCALE = 1000;
@@ -87,11 +92,11 @@ scene.background = new THREE.CubeTextureLoader().setPath('../assets/skybox/').lo
 const texLoader = new THREE.TextureLoader();
 
 // sun
-const sunGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.SunRadius / ASTRO.AU ), 32, 32);
+const sunGeometry = new THREE.SphereGeometry(SCALE * ( Astro.SunRadius / Astro.AU ), 32, 32);
 const sunMaterial = new THREE.ShaderMaterial(
   {
-    vertexShader: sunShader.vertShader,
-    fragmentShader: sunShader.fragShader,
+    vertexShader: SunShader.vertShader,
+    fragmentShader: SunShader.fragShader,
     uniforms: 
     {
       uTime: { value: 0 }
@@ -103,7 +108,7 @@ sun.castShadow = false;
 sun.receiveShadow = false;
 
 // earth (terrain & cloud & sprite)
-const earthGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ), 32, 32);
+const earthGeometry = new THREE.SphereGeometry(SCALE * ( Astro.EarthRadius / Astro.AU ), 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
   map: texLoader.load("../assets/texture/earth_albedo.jpg"),
   normalMap: texLoader.load("../assets/texture/earth_normal.png"),
@@ -137,7 +142,7 @@ earth.add(earthCloud);
 earth.remove(earthCloud);
 
 // moon
-const moonGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.MoonRadius / ASTRO.AU ), 32, 32);
+const moonGeometry = new THREE.SphereGeometry(SCALE * ( Astro.MoonRadius / Astro.AU ), 32, 32);
 const moonMaterial = new THREE.MeshStandardMaterial({
   map: new THREE.TextureLoader().load("../assets/texture/moon_albedo.png"),
   bumpMap: new THREE.TextureLoader().load("../assets/texture/moon_disp.png"),
@@ -159,8 +164,8 @@ sunLight.shadow.camera.far = 3*SCALE;
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 
 // Earth orbit
-const earthOrbit = new orbit(camera, sun, earth, 0x87CEEB);
-const moonOrbit = new orbit(camera, earth, moon, 0xffffff);
+const earthOrbit = new Orbit(camera, sun, earth, 0x87CEEB);
+const moonOrbit = new Orbit(camera, earth, moon, 0xffffff);
 
 function initScene() {
   scene.add(sun);
@@ -193,12 +198,12 @@ function updateMeshs() {
     }
   )
 
-  let earthInfo = ASTRO.getEarthInfo(TIME.current);
+  let earthInfo = Astro.getEarthInfo(TIME.current);
   earth.position.copy(earthInfo.position).multiplyScalar(SCALE);
   earth.rotation.y = earthInfo.rotation;
   earth.rotation.x = -earthInfo.oblecl;
 
-  let moonInfo = ASTRO.getMoonInfo(TIME.current);
+  let moonInfo = Astro.getMoonInfo(TIME.current);
   moon.position.copy(moonInfo.position).multiplyScalar(SCALE).add(earth.position);
   moon.rotation.y = moonInfo.rotation;
 
@@ -341,7 +346,7 @@ tick();
 function landOnEarth(lonDeg, latDeg) {
   lonDeg = THREE.MathUtils.degToRad(lonDeg);
   latDeg = THREE.MathUtils.degToRad(latDeg);
-  const r = 1.00 * SCALE * ( ASTRO.EarthRadius / ASTRO.AU );
+  const r = 1.00 * SCALE * ( Astro.EarthRadius / Astro.AU );
   const vec3 = new THREE.Vector3(
     r * Math.cos(latDeg) * Math.cos(lonDeg),
     r * Math.sin(latDeg),
@@ -377,15 +382,15 @@ document.getElementById("sun-label").addEventListener("click", () => {
 });
 
 export function resetView() {
-  traveller.travelToTarget(OBSERVE.reset, ControlObject).start()
+  traveller.travelToTarget(Observe.reset, ControlObject).start()
 }
 
 export function topView() {
-  traveller.travelToTarget(OBSERVE.above, ControlObject).start()
+  traveller.travelToTarget(Observe.above, ControlObject).start()
 }
 
 export function sideView() {
-  traveller.travelToTarget(OBSERVE.side, ControlObject).start()
+  traveller.travelToTarget(Observe.side, ControlObject).start()
 }
 
 export function mapSwitch() {
