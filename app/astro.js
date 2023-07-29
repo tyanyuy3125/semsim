@@ -1,10 +1,12 @@
+// Astronomy simulation module
+// Reference:
 // Flandern, Thomas C. van and K. F. Pulkkinen. “Low-precision formulae for planetary positions.” 
 // Astrophysical Journal Supplement Series 41 (1979): 391-411.
 // doi:10.1086/190623
-
+//
 // How to compute planetary positions
 // https://www.stjarnhimlen.se/comp/ppcomp.html
-
+//
 // Approximate Positions of the Planets - NASA
 // https://ssd.jpl.nasa.gov/planets/approx_pos.html
 

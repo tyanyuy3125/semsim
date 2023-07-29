@@ -1,3 +1,6 @@
+// HUD module
+// Rendering the time of the celestial system at the bottom of the screen.
+
 import TIME from "./time";
 
 const dateElement = document.querySelector("#hud .date");

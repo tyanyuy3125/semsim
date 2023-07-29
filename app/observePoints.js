@@ -1,3 +1,6 @@
+// ObservePoints module
+// Stores several fixed observer points for switching perspectives.
+
 import * as THREE from 'three';
 export const observeGeometry = new THREE.SphereGeometry(10, 32, 32);
 const ghostMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0});

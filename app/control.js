@@ -1,3 +1,6 @@
+// Trackball controls module
+// Provides a way to move the camera using the mouse.
+
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -11,19 +14,14 @@ class CustomTrackballControls extends TrackballControls {
     this.enableDamping = true;
     this.dampingFactor = 0.1; 
     this.noPan = true;
-    // this.noZoom = true;
-    // this.lastTarget = new THREE.Vector3().copy(this.target);
 
     this.addEventListener('change', () => {
       this.isMouseWheelMoving = true;
-
-      
     });
   }
 
   update() {
     super.update();
-  // TODO: When target is moving, the distance between camera and target should be constant.
   }
 }
 

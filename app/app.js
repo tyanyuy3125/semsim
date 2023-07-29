@@ -1,3 +1,5 @@
+// Entry point of the application.
+
 import * as THREE from "three";
 import CustomControls from "./control.js";
 import TIME from "./time";
@@ -7,6 +9,7 @@ import * as ASTRO from "./astro.js";
 import * as OBSERVE from "./observePoints.js";
 import * as HUD from "./HUD.js"
 import { Compositor } from "./compositor"
+import * as sunShader from "../assets/shader/sun";
 
 // Overscall relative scale of solar system.
 const SCALE = 1000;
@@ -18,6 +21,7 @@ const sizes = {
 
 //#region Overall Initialization
 const scene = new THREE.Scene();
+
 // Init camera for default renderer.
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
 camera.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
@@ -53,9 +57,11 @@ function resizeEvent() {
   // update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
+
   // update camera
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
+
   // update renderer
   renderer.setSize(sizes.width, sizes.height);
   compositor.setSize(sizes.width, sizes.height);
@@ -82,7 +88,6 @@ const texLoader = new THREE.TextureLoader();
 
 // sun
 const sunGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.SunRadius / ASTRO.AU ), 32, 32);
-import * as sunShader from "../assets/shader/sun";
 const sunMaterial = new THREE.ShaderMaterial(
   {
     vertexShader: sunShader.vertShader,

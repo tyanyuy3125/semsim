@@ -13,9 +13,9 @@
 </head>
 
 <body>
+  <!-- Default frame buffer & celestial labels. -->
   <div id="canvas-container">
     <canvas id="webgl"></canvas>
-    <!-- <div id="css3d"></div> -->
     <div class="celestial-label invisible" id="sun-label"><br>&nbsp;SUN</div>
     <div class="celestial-label invisible" id="earth-label">
       <br>&nbsp;EARTH
@@ -26,10 +26,14 @@
       <div class="celestial-circle" id="moon-circle"></div>
     </div>
   </div>
+
+  <!-- HUD. -->
   <div id="hud">
     <div class="date"></div>
     <div class="time"></div>
   </div>
+
+  <!-- Team logo. -->
   <div id="logo">
     <div id="team">
       <img src="./logo/team.png">
@@ -40,9 +44,13 @@
       <div id="vecline"></div>
     </div>
   </div>
+
+  <!-- Pause button. -->
   <div id="pauseButton">
     <img src="./logo/pause.png" alt="Pause">
   </div>
+
+  <!-- Time control panel. -->
   <div id="controlPanel">
     <input type="range" id="timeSpeed" name="timeSpeed" min="-30" max="30" value="1">
     <label for="timeSpeed">速度</label>
@@ -57,6 +65,7 @@
     </div>
   </div>
 
+  <!-- Sidebar icons. -->
   <div id="icons">
     <div class="icon" id="eyeIcon">
       <img src="./logo/eye.png" alt="eye">
@@ -89,8 +98,8 @@
     </div>
   </div>
 
+  <!-- Picture-in-picture view. -->
   <div id="povView">
-    <!-- Your picture-in-picture view code goes here -->
     <canvas id="webgl2"></canvas>
   </div>
 

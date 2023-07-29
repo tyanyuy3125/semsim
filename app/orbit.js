@@ -1,10 +1,12 @@
+// Orbit module
+// Author: Lang Yang
+// Create: new orbit(camera, centerObject, surroundObject, color)
+// Usage: call this.update() in the updateMesh process
+
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
 
-// Author: Lang Yang
-// Create: new orbit(camera, centerObject, surroundObject, color)
-// Usage: call this.update() in the updateMesh process
 class orbit extends Line2 {
   constructor(camera, centerObject, surroundObject, color) {
     const geometry = new LineGeometry();

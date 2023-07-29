@@ -1,8 +1,10 @@
+// Traveller module
+// Author: Lang Yang
+// Animation controller for camera.
+
 import * as THREE from "three";
 import * as TWEEN from "three/examples/jsm/libs/tween.module";
 
-// Author: Lang Yang
-// Animation controller for camera
 class Traveller {
   constructor(camera, controls) {
     this.camera = camera;

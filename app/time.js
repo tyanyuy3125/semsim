@@ -1,3 +1,6 @@
+// Time module
+// Maintain global animation run times for celestial systems.
+
 var current = new Date();
 var newMoonEpoch = new Date("2018-01-17");
 newMoonEpoch.setUTCHours(2);
