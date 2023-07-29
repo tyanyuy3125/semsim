@@ -3,6 +3,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #000000;
+    margin: 0;
 }
 
 #logo {
@@ -96,13 +97,11 @@ body {
 }
 
 #controlPanel label[for="timeSpeed"] {
-    /* Your styles for the label go here */
     color: white;
     font-size: 16px;
 }
 
 #speedValue {
-    /* Your styles for the value display go here */
     color: white;
     font-size: 16px;
     margin-bottom: 10px;
@@ -167,8 +166,6 @@ input[type="range"] {
     top: 50%;
     transform: translateY(-50%);
     /* Vertically center the options */
-    /* white-space: nowrap; */
-    /* Prevent options from wrapping to new lines */
 }
 
 .option {
@@ -187,10 +184,8 @@ input[type="range"] {
     /* Display the options horizontally */
     flex-direction: row;
     /* Ensure the options are placed in a row */
-    /* right: 150%; */
 }
 
-/* Add styles for the separators between options */
 .option:not(:last-child) {
     border-right: 1px solid #888;
     /* Add a vertical line to the right of each option except the last one */
