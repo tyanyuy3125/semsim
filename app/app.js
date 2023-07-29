@@ -8,6 +8,7 @@ import * as OBSERVE from "./observePoints.js";
 import * as HUD from "./HUD.js"
 import { Compositor } from "./compositor"
 
+// Overscall relative scale of solar system.
 const SCALE = 1000;
 
 const sizes = {
@@ -15,32 +16,36 @@ const sizes = {
   height: window.innerHeight,
 };
 
+//#region Overall Initialization
 const scene = new THREE.Scene();
-
+// Init camera for default renderer.
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.021, 50000);
 camera.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
+// Init camera2 for secondary renderer.
 const camera2 = new THREE.PerspectiveCamera(75, 300 / 200, 0.021, 50000);
 camera2.position.set(0, 0.2 * SCALE, 1.5 * SCALE);
 
-
+// Init default renderer.
 let canvas = window.document.getElementById('webgl');
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
 renderer.setSize(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 
+// Init secondary renderer.
 let canvas2 = window.document.getElementById('webgl2');
 const renderer2 = new THREE.WebGLRenderer({ antialias: true, canvas: canvas2 });
 renderer2.setSize(300, 200);
 renderer2.shadowMap.enabled = true;
 renderer2.shadowMap.type = THREE.PCFShadowMap;
 
+// Init 2 compositors.
 const compositor = new Compositor(renderer, scene, camera, sizes.width, sizes.height);
 const compositor2 = new Compositor(renderer2, scene, camera2, 300, 200);
 
+// Init control mechanism.
 const controls = new CustomControls(camera, renderer.domElement);
-
 
 // resize listener
 let resizeTimeout;
@@ -48,11 +53,9 @@ function resizeEvent() {
   // update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-
   // update camera
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
-
   // update renderer
   renderer.setSize(sizes.width, sizes.height);
   compositor.setSize(sizes.width, sizes.height);
@@ -74,6 +77,7 @@ scene.background = new THREE.CubeTextureLoader().setPath('../assets/skybox/').lo
   'negZ.jpg',
 ]);
 
+// Texture loader
 const texLoader = new THREE.TextureLoader();
 
 // sun
@@ -89,12 +93,11 @@ const sunMaterial = new THREE.ShaderMaterial(
     }
   }
 );
-
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
 
-// earth
+// earth (terrain & cloud & sprite)
 const earthGeometry = new THREE.SphereGeometry(SCALE * ( ASTRO.EarthRadius / ASTRO.AU ), 32, 32);
 const earthMaterial = new THREE.MeshStandardMaterial({
   map: texLoader.load("../assets/texture/earth_albedo.jpg"),
@@ -107,7 +110,6 @@ const earthTerritoryMaterial = new THREE.MeshBasicMaterial({
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 earth.castShadow = true;
 earth.receiveShadow = true;
-
 const earthCloudGeometry = new THREE.SphereGeometry(1.01 * earthGeometry.parameters.radius, 32, 32);
 const cloudMaterial = new THREE.MeshStandardMaterial(
   {
@@ -120,14 +122,12 @@ const earthCloud = new THREE.Mesh(earthCloudGeometry, cloudMaterial);
 earthCloud.receiveShadow = true;
 earthCloud.castShadow = true;
 earthCloud.name = "cloud";
-
 const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
   map: new THREE.TextureLoader().load("../assets/texture/sprite.png"),
   transparent: true,
   opacity: 0.1
 }));
 sprite.scale.set(0.145, 0.145, 1);
-
 earth.add(earthCloud);
 earth.remove(earthCloud);
 
@@ -157,7 +157,6 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 const earthOrbit = new orbit(camera, sun, earth, 0x87CEEB);
 const moonOrbit = new orbit(camera, earth, moon, 0xffffff);
 
-
 function initScene() {
   scene.add(sun);
   scene.add(earth);
@@ -173,7 +172,11 @@ function initScene() {
 
 var ControlObject = sun;
 const traveller = new Traveller(camera, controls);
+//#endregion
 
+//#region Scene Update
+
+// Update all meshes.
 function updateMeshs() {
   const oldControlObjectPosition = ControlObject.position.clone();
   const sunPosition = sun.position.clone();
@@ -193,6 +196,7 @@ function updateMeshs() {
   let moonInfo = ASTRO.getMoonInfo(TIME.current);
   moon.position.copy(moonInfo.position).multiplyScalar(SCALE).add(earth.position);
   moon.rotation.y = moonInfo.rotation;
+
   const tempObjectPosition = ControlObject.position.clone();
   scene.traverse(
     function ( object ) {
@@ -201,12 +205,13 @@ function updateMeshs() {
       }
     }
   )
+
   camera.position.sub(oldControlObjectPosition);
-  // camera2.position.sub(oldControlObjectPosition);
   moonOrbit.update();
   earthOrbit.update();
 }
 
+// Temporary remove labels to ensure the functionality of ray casters.
 const sunLabel = document.getElementById("sun-label");
 const earthLabel = document.getElementById("earth-label");
 const moonLabel = document.getElementById("moon-label");
@@ -225,6 +230,7 @@ const popConcealIgnore = () => {
   earth.add(sprite);
 }
 
+// Update label position.
 const labelConceal = (object, label, raycaster) => {
   const vector = object.position.clone();
   vector.project(camera);
@@ -248,6 +254,7 @@ const labelConceal = (object, label, raycaster) => {
   label.style.transform = `translate(${translateX}px,${translateY}px)`;
 };
 
+// Update labels.
 function updateLabels() {
   (sun.position.distanceTo(camera.position) < 0.3 * SCALE) ?
     sunLabel.classList.add('invisible') :
@@ -273,10 +280,9 @@ function updateLabels() {
   popConcealIgnore();
 }
 
-// TIME.current = new Date(2023, 3, 20, 11, 16, 44, 0); // 135.9, -16.8
-// TIME.current = new Date(2001, 11, 14, 23, 31, 56, 0); // -130.7, 52.6
+// Update dynamic textures.
 function updateTextures() {
-  sunMaterial.uniforms.uTime.value = TIME.RelativeSecondInSunCycle();
+  sunMaterial.uniforms.uTime.value = TIME.ProportionInSunCycle();
 }
 
 // animation loop
@@ -286,23 +292,21 @@ let isSun = true;
 const tick = () => {
   window.requestAnimationFrame(tick);
 
+  // Update global timing.
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
   TIME.update(deltaTime);
 
+  // Update all objects.
   HUD.updateHUD();
-
   updateMeshs();
-
   updateTextures();
-
   controls.update();
   traveller.update();
 
   // Perfect sun eclipse:
   camera2.position.copy(earth.position);
-  // camera2.position.copy(landOnEarth(-130.7, 52.6));
   if(isSun) {
     camera2.lookAt(sun.position);
     camera2.position.copy(landOnEarth(175, -9.5182));
@@ -313,20 +317,20 @@ const tick = () => {
   camera2.updateProjectionMatrix();
 
   // IMPORTANT: update label after render
-  // renderer.render(scene, camera);
   compositor.render();
-
-  // renderer2.render(scene, camera2);
   moonOrbit.visible = false;
   earthOrbit.visible = false;
   compositor2.render();
   updateLabels();
 }
 
+//#endregion 
+
 initScene();
 resizeEvent();
 tick();
 
+//#region UI Misc
 
 // transform from lon and lat to position on earth
 function landOnEarth(lonDeg, latDeg) {
@@ -345,7 +349,6 @@ function landOnEarth(lonDeg, latDeg) {
   vec3.add(earth.position);
   return vec3;
 }
-
 
 document.getElementById("earth-label").addEventListener("click", () => {
   traveller.dispatchArriveEvent = () => {
@@ -368,8 +371,6 @@ document.getElementById("sun-label").addEventListener("click", () => {
   traveller.travelToTarget(sun).start();
 });
 
-
-// TO BE ADDED TO EVENT LISTENER:
 export function resetView() {
   traveller.travelToTarget(OBSERVE.reset, ControlObject).start()
 }
@@ -382,13 +383,7 @@ export function sideView() {
   traveller.travelToTarget(OBSERVE.side, ControlObject).start()
 }
 
-// oringal method doesn't work and may cause frame drop?
 export function mapSwitch() {
-  // if (earth.children.includes(earthCloud)) {
-  //   earth.remove(earthCloud);
-  // } else {
-  //   earth.add(earthCloud);
-  // }
   earthCloud.visible = !earthCloud.visible;
   sprite.visible = !sprite.visible;
   if(earthCloud.visible)
@@ -400,7 +395,6 @@ export function mapSwitch() {
     earth.material = earthTerritoryMaterial;
   }
 }
-
 
 topView_.addEventListener("click", (event) => {
   topView();
@@ -429,3 +423,5 @@ export function setSun() {
 export function setMoon() {
   isSun = false;
 }
+
+//#endregion

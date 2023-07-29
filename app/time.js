@@ -31,7 +31,8 @@ const TIME = {
     return (c - o - Math.floor((c - o) / t) * t) / t;
   },
 
-  RelativeSecondInSunCycle: function () {
+  // indicating the proportion of the time in the sun cycle.
+  ProportionInSunCycle: function () {
     var c = current.getTime();
     var o = newMoonEpoch.getTime();
     var t = c - o;

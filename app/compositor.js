@@ -1,4 +1,4 @@
-import { Vector2, WebGLRenderer, PCFShadowMap } from 'three';
+import { Vector2 } from 'three';
 
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -7,24 +7,17 @@ import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import {OutputPass} from 'three/examples/jsm/postprocessing/OutputPass'
 
-/*
-Compositor
-Tianyu Huang <tianyu@illumiart.net>
-
-Usage:
-Call constructor in the init loop;
-Call render() in the render loop;
-call setSize() in the resize callback.
-*/
+// Compositor
+// Tianyu Huang <tianyu@illumiart.net>
+//
+// Usage:
+// Call constructor in the init loop;
+// Call render() in the render loop;
+// call setSize() in the resize callback.
 class Compositor {
     constructor(renderer, scene, camera, width, height) {
         this.width = width;
         this.height = height;
-
-        // this.renderer = new WebGLRenderer();
-        // this.renderer.setSize(width, height);
-        // this.renderer.shadowMap.enabled = true;
-        // this.renderer.shadowMap.type = PCFShadowMap;
 
         this.composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
@@ -42,7 +35,6 @@ class Compositor {
     setSize(width, height) {
         this.width = width;
         this.height = height;
-        // this.renderer.setSize(width, height);
         this.composer.setSize(width, height);
     }
 

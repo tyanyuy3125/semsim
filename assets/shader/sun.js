@@ -1,10 +1,9 @@
-/*
-Vertex & fragment shader for animated sun textures.
-Tianyu Huang <tianyu@illumiart.net>
-Usage:
-Link vertShader & fragShader exported to corresponding three.js targets.
-*/
+// Vertex & fragment shader for animated sun textures.
+// Tianyu Huang <tianyu@illumiart.net>
+// Usage:
+// Link vertShader & fragShader exported to corresponding three.js targets.
 
+// Vertex shader
 const vertShader = /*glsl*/ `
 varying vec3 vPos;
 
@@ -15,6 +14,7 @@ void main()
 }
 `;
 
+// Fragment shader
 const fragShader = /*glsl*/ `
 varying vec3 vPos;
 uniform float uTime;
