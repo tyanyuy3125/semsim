@@ -56,6 +56,9 @@ const compositor2 = new Compositor(renderer2, scene, camera2, 300, 200);
 // Init control mechanism.
 const controls = new CustomControls(camera, renderer.domElement);
 
+// Init animation generator for camera
+const traveller = new Traveller(camera, controls);
+
 // resize listener
 let resizeTimeout;
 function resizeEvent() {
@@ -181,7 +184,6 @@ function initScene() {
 }
 
 var ControlObject = sun;
-const traveller = new Traveller(camera, controls);
 //#endregion
 
 //#region Scene Update
@@ -221,7 +223,7 @@ function updateMeshs() {
   earthOrbit.update();
 }
 
-// Temporary remove labels to ensure the functionality of ray casters.
+// Temporary remove orbit and sprite to ensure the functionality of ray casters.
 const sunLabel = document.getElementById("sun-label");
 const earthLabel = document.getElementById("earth-label");
 const moonLabel = document.getElementById("moon-label");
@@ -360,27 +362,29 @@ function landOnEarth(lonDeg, latDeg) {
   return vec3;
 }
 
-document.getElementById("earth-label").addEventListener("click", () => {
+// Events triggered by labels mixed in the 3D scene
+earthLabel.addEventListener("click", () => {
   traveller.dispatchArriveEvent = () => {
     ControlObject = earth;
   }
   traveller.travelToTarget(earth).start();
 });
 
-document.getElementById("moon-label").addEventListener("click", () => {
+moonLabel.addEventListener("click", () => {
   traveller.dispatchArriveEvent = () => {
     ControlObject = moon;
   }
   traveller.travelToTarget(moon).start();
 });
 
-document.getElementById("sun-label").addEventListener("click", () => {
+sunLabel.addEventListener("click", () => {
   traveller.dispatchArriveEvent = () => {
     ControlObject = sun;
   }
   traveller.travelToTarget(sun).start();
 });
 
+// Functions for external, fixed-position buttons
 export function resetView() {
   traveller.travelToTarget(Observe.reset, ControlObject).start()
 }
@@ -405,26 +409,6 @@ export function mapSwitch() {
     earth.material = earthTerritoryMaterial;
   }
 }
-
-topView_.addEventListener("click", (event) => {
-  topView();
-});
-
-sideView_.addEventListener("click", (event) => {
-  sideView();
-});
-
-resetView_.addEventListener("click", (event) => {
-  resetView();
-});
-
-sunIcon.addEventListener("click", (event) => {
-  setSun();
-});
-
-moonIcon.addEventListener("click", (event) => {
-  setMoon();
-});
 
 export function setSun() {
   isSun = true;
