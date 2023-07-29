@@ -10,14 +10,9 @@ class CustomTrackballControls extends TrackballControls {
 
     this.minDistance = camera.near;
     this.maxDistance = 2000;
-    this.isMouseWheelMoving = false;
     this.enableDamping = true;
     this.dampingFactor = 0.1; 
     this.noPan = true;
-
-    this.addEventListener('change', () => {
-      this.isMouseWheelMoving = true;
-    });
   }
 
   update() {

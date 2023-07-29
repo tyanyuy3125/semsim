@@ -1,3 +1,5 @@
+/* Stylesheets for canvas and labels mixed in canvas */
+
 body {
   margin: 0;
   overflow-x: hidden;
@@ -15,12 +17,6 @@ div::-webkit-scrollbar{
   caret-color: transparent;
 }
 
-#css3d {
-  background: transparent;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
 #webgl  {
   position: absolute;
   left: 0;
